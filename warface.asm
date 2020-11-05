@@ -253,3 +253,4 @@ dim_out:
 
   .include "bank0_subroutines.asm"
   .include "nametables.asm"
+  .include "patterns.asm"

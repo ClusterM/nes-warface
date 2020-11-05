@@ -186,3 +186,35 @@ title_palette:
   .incbin "title_palette_2.bin"
   .incbin "title_palette_3.bin"
 
+frame_0_palette:
+  .incbin "frame_0_palette_0.bin"
+  .incbin "frame_0_palette_1.bin"
+  .incbin "frame_0_palette_2.bin"
+  .incbin "frame_0_palette_3.bin"
+
+frame_1_palette:
+  .incbin "frame_1_palette_0.bin"
+  .incbin "frame_1_palette_1.bin"
+  .incbin "frame_1_palette_2.bin"
+  .incbin "frame_1_palette_3.bin"
+
+frame_2_palette:
+  .incbin "frame_2_palette_0.bin"
+  .incbin "frame_2_palette_1.bin"
+  .incbin "frame_2_palette_2.bin"
+  .incbin "frame_2_palette_3.bin"
+
+symbols_palette:
+  .incbin "symbols_palette.bin"
+
+text_0:
+  .incbin "text_0.bin"
+
+text_1:
+  .incbin "text_1.bin"
+
+text_2:
+  .incbin "text_2.bin"
+
+text_3:
+  .incbin "text_3.bin"
