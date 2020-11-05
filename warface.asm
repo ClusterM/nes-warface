@@ -22,9 +22,17 @@ OAMDMA    .equ $4014
   .rsset $0020 ; адрес для переменных
 ACTIVE_BANK         .rs 1 ; текущий PRG банк
 CONSOLE_TYPE        .rs 1 ; тип консоли
-COPY_SOURCE_ADDR    .rs 2
-PAL_SOURCE_ADDR     .rs 2
-PALETTE_CACHE       .rs 16
+COPY_SOURCE_ADDR    .rs 2 ; исходный адрес для копирования данный
+PAL_SOURCE_ADDR     .rs 2 ; исходный адрес для загрузки палитры
+PALETTE_CACHE       .rs 16 ; кеш для временного хранения палитры
+TEXT_SOURCE_ADDR    .rs 2 ; исходный адрес текста
+TEXT_LINE           .rs 1 ; текущая строка текста на экране
+TEXT_POS            .rs 2 ; текущая позиция текста в строке
+TEXT_NAMETABLE      .rs 1 ; текущий nametable для текста
+TEXT_SCROLL_STARTED .rs 1 ; флаг, что запущен автоскроллинг
+SCROLL_POS          .rs 1 ; текущая позиция скроллинга
+SCROLL_NT           .rs 1 ; текущий nametable скроллинга
+SCROLL_TARGET_POS   .rs 1 ; целевая позиция скроллинга
 
   .bank 12     ; PRG банк #12, середина PRG
   .org $9213
@@ -57,9 +65,9 @@ Start:
   ldx CONSOLE_TYPE
   jsr $A999  ; Инициализируем музыкальный проигрыватель
 
-  cli
   jsr disable_ppu
-  jsr wait_blank_simple
+  ; обнуляем скроллинг
+  jsr reset_scroll
   ; загружаем nametable
   lda #BANK(title_name_table)/2
   jsr select_prg_bank
@@ -69,42 +77,159 @@ Start:
   sta COPY_SOURCE_ADDR+1
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
-  jsr wait_blank_simple
-  lda #0
+  lda #(BANK(title_pattern)-16)/2
   jsr select_chr_bank
+  ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #BANK(title_palette)/2
+  lda #0
   jsr select_prg_bank
   lda #LOW(title_palette)
   sta PAL_SOURCE_ADDR
   lda #HIGH(title_palette)
   sta PAL_SOURCE_ADDR+1
-
-  ; бесконечный цикл
-main_loop:
+  ; плавно прибавляем яркость
   jsr dim_in
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-
+  cli ; музыка
+  ; ждём любую кнопку  
+  jsr wait_any_button
+  ; убавляем яркость
   jsr dim_out
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
-  jsr wait_blank
 
+  jsr wait_blank
+  ; отображаем текст
+  lda #LOW(text_0)
+  sta TEXT_SOURCE_ADDR
+  lda #HIGH(text_0)
+  sta TEXT_SOURCE_ADDR+1
+  lda #0
+  jsr select_prg_bank
+  jsr print_text
+
+  jsr wait_blank
+  jsr disable_ppu
+  ; обнуляем скроллинг
+  jsr reset_scroll
+  ; загружаем nametable
+  lda #BANK(frame_0_name_table)/2
+  jsr select_prg_bank
+  lda #LOW(frame_0_name_table)
+  sta COPY_SOURCE_ADDR
+  lda #HIGH(frame_0_name_table)
+  sta COPY_SOURCE_ADDR+1
+  jsr load_name_table
+  ; выбираем CHR банк с автопереключением
+  lda #(BANK(frame_0_pattern)-16)/2
+  jsr select_chr_bank
+  ; включаем PPU
+  jsr enable_ppu
+  ; загружаем палитру
+  lda #0
+  jsr select_prg_bank
+  lda #LOW(frame_0_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(frame_0_palette)
+  sta PAL_SOURCE_ADDR+1
+  ; плавно прибавляем яркость
+  jsr dim_in
+  ; ждём любую кнопку  
+  jsr wait_any_button
+  ; убавляем яркость
+  jsr dim_out
+
+  jsr wait_blank
+  ; отображаем текст
+  lda #LOW(text_1)
+  sta TEXT_SOURCE_ADDR
+  lda #HIGH(text_1)
+  sta TEXT_SOURCE_ADDR+1
+  lda #0
+  jsr select_prg_bank
+  jsr print_text
+
+  jsr wait_blank
+  jsr disable_ppu
+  ; обнуляем скроллинг
+  jsr reset_scroll
+  ; загружаем nametable
+  lda #BANK(frame_1_name_table)/2
+  jsr select_prg_bank
+  lda #LOW(frame_1_name_table)
+  sta COPY_SOURCE_ADDR
+  lda #HIGH(frame_1_name_table)
+  sta COPY_SOURCE_ADDR+1
+  jsr load_name_table
+  ; выбираем CHR банк с автопереключением
+  lda #(BANK(frame_1_pattern)-16)/2
+  jsr select_chr_bank
+  ; включаем PPU
+  jsr enable_ppu
+  ; загружаем палитру
+  lda #0
+  jsr select_prg_bank
+  lda #LOW(frame_1_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(frame_1_palette)
+  sta PAL_SOURCE_ADDR+1
+  ; плавно прибавляем яркость
+  jsr dim_in
+  ; ждём любую кнопку  
+  jsr wait_any_button
+  ; убавляем яркость
+  jsr dim_out
+
+  jsr wait_blank
+  ; отображаем текст
+  lda #LOW(text_2)
+  sta TEXT_SOURCE_ADDR
+  lda #HIGH(text_2)
+  sta TEXT_SOURCE_ADDR+1
+  lda #0
+  jsr select_prg_bank
+  jsr print_text
+
+  jsr disable_ppu
+  ; обнуляем скроллинг
+  jsr reset_scroll
+  ; загружаем nametable
+  lda #BANK(title_name_table)/2
+  jsr select_prg_bank
+  lda #LOW(title_name_table)
+  sta COPY_SOURCE_ADDR
+  lda #HIGH(title_name_table)
+  sta COPY_SOURCE_ADDR+1
+  jsr load_name_table
+  ; выбираем CHR банк с автопереключением
+  lda #(BANK(title_pattern)-16)/2
+  jsr select_chr_bank
+  ; включаем PPU
+  jsr enable_ppu
+  ; загружаем палитру
+  lda #0
+  jsr select_prg_bank
+  lda #LOW(title_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(title_palette)
+  sta PAL_SOURCE_ADDR+1
+  ; плавно прибавляем яркость
+  jsr dim_in
+  ; ждём любую кнопку  
+  jsr wait_any_button
+  ; убавляем яркость
+  jsr dim_out
+
+  jsr wait_blank
+  ; отображаем текст
+  lda #LOW(text_3)
+  sta TEXT_SOURCE_ADDR
+  lda #HIGH(text_3)
+  sta TEXT_SOURCE_ADDR+1
+  lda #0
+  jsr select_prg_bank
+  jsr print_text
+
+main_loop:
+  jsr wait_blank
   jmp main_loop
 
 IRQ:
@@ -120,6 +245,10 @@ IRQ:
   lda #6
   sta $6000
   jsr $A99C      ; играем музыку
+  ; читаем контроллер
+  lda #0
+  sta $6000
+  jsr read_controller 
   ; возвращаем назад активный банк
   lda ACTIVE_BANK
   sta $6000
@@ -170,10 +299,17 @@ enable_ppu:
   bit PPUSTATUS
   lda #0
   sta PPUSCROLL
+  lda SCROLL_POS
   sta PPUSCROLL
+  lda SCROLL_NT
+  bne .second_nt
   lda #%10000000
+  jmp .write_ppuctrl
+.second_nt:
+  lda #%10000010
+.write_ppuctrl
   sta PPUCTRL
-  lda #%00001010
+  lda #%00011110
   sta PPUMASK
   jsr wait_blank_simple
   rts
@@ -203,6 +339,21 @@ wait_blank:
   pha
   txa
   pha
+
+  ; скроллим, если нужно
+  lda SCROLL_POS
+  cmp SCROLL_TARGET_POS
+  beq .end_scroll
+  inc SCROLL_POS
+  lda SCROLL_POS
+  cmp #240
+  bne .end_scroll
+  lda #0
+  sta SCROLL_POS
+  lda SCROLL_NT
+  eor #1
+  sta SCROLL_NT  
+.end_scroll:
 
   jsr enable_ppu
 
@@ -251,6 +402,28 @@ dim_out:
   jsr dim_out_s
   rts
 
+reset_scroll:
+  lda #0
+  sta SCROLL_POS
+  sta SCROLL_NT
+  sta SCROLL_TARGET_POS
+  rts
+
+  ; waiting for button release
+wait_buttons_not_pressed:
+  jsr wait_blank ; waiting for v-blank
+  lda <BUTTONS
+  bne wait_buttons_not_pressed
+  rts
+
+  ; waiting for any button pressed
+wait_any_button:
+  jsr wait_blank ; waiting for v-blank
+  lda <BUTTONS
+  beq wait_any_button
+  rts
+
   .include "bank0_subroutines.asm"
+  .include "buttons.asm"
   .include "nametables.asm"
   .include "patterns.asm"

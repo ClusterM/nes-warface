@@ -3,13 +3,32 @@
   .org $8000
 
 init:
-  lda #%00000000 ; Выключаем пока что PPU
-  sta PPUSTATUS
+  lda #%00000000 ; выключаем пока что PPU
+  sta PPUCTRL
   sta PPUMASK
   jsr wait_blank_simple
-  jsr load_black  ; Делаем экран чёрным
+  jsr load_black  ; делаем экран чёрным
 
-  ; Определяем тип консоли
+  ; очистка памяти
+  lda #$00
+  sta COPY_SOURCE_ADDR
+  sta COPY_SOURCE_ADDR+1
+  lda #0
+  ldy #$22
+.memory_clean_loop:
+  sta [COPY_SOURCE_ADDR], y
+  iny  
+  bne .memory_clean_loop
+
+  lda #0
+  sta OAMADDR
+  ldx #0
+.clean_oam_next:
+  sta OAMDATA
+  inx
+  bne .clean_oam_next
+
+  ; определяем тип консоли
   jsr wait_blank_simple
 console_detect:
   inx
@@ -76,7 +95,7 @@ clear_screen:
   dey
   bne .loop
   rts
-  
+
 load_black:
   ; загружаем пустую палитру по адресу $3F00 в PPU
   lda #$3F
@@ -113,6 +132,27 @@ load_palette:
   lda #$3F
   sta $2006
   lda #$00
+  sta $2006
+  ldy #$00
+  ldx #16
+.loop:
+  lda [COPY_SOURCE_ADDR], y
+  sta $2007
+  iny
+  dex
+  bne .loop
+  bit PPUSTATUS
+  rts
+
+  ; загружаем 16 байт палитры в $3F10
+load_sprite_palette:
+  lda #LOW(PALETTE_CACHE)
+  sta COPY_SOURCE_ADDR
+  lda #HIGH(PALETTE_CACHE)
+  sta COPY_SOURCE_ADDR+1
+  lda #$3F
+  sta $2006
+  lda #$10
   sta $2006
   ldy #$00
   ldx #16
@@ -180,6 +220,238 @@ dim_out_s:
   jsr wait_blank
   rts
 
+print_text:
+  ; выключаем PPU
+  jsr disable_ppu
+  ; выбираем последний CHR банк
+  lda #%00011111
+  sta $6001
+  ; очищаем экран
+  jsr clear_screen
+  ; загружаем палитру
+  lda #LOW(symbols_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(symbols_palette)
+  sta PAL_SOURCE_ADDR+1
+  jsr preload_palette
+  jsr load_palette
+  lda #2
+  sta TEXT_LINE
+  lda #1
+  sta TEXT_POS
+  lda #0
+  sta TEXT_NAMETABLE
+  sta TEXT_SCROLL_STARTED
+  jsr reset_scroll
+.next_char:
+  ldy #0
+  lda [TEXT_SOURCE_ADDR], y
+  beq .end
+  cmp #$FF
+  bne .not_next_line
+  ; переходим на следующую строку
+  jsr next_line
+  jmp .inc_source_pos
+.not_next_line:
+  ; печатаем символ
+  jsr symbol_print
+.inc_source_pos:
+  inc TEXT_SOURCE_ADDR
+  bne .inc_text_pos
+  inc TEXT_SOURCE_ADDR+1
+.inc_text_pos:
+  inc TEXT_POS
+  jmp .next_char
+.end:
+  jsr wait_any_button
+  lda #LOW(symbols_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(symbols_palette)
+  sta PAL_SOURCE_ADDR+1
+  jsr dim_out
+  rts
+
+  ; определяем адрес, куда писать символ
+symbol_address:
+  pha
+  bit PPUSTATUS
+  lda TEXT_NAMETABLE
+  bne .second_nametable
+  lda TEXT_LINE
+  lsr A
+  lsr A
+  lsr A
+  clc
+  adc #$20  
+  jmp .write_nametable_hi
+.second_nametable:
+  lda TEXT_LINE
+  lsr A
+  lsr A
+  lsr A
+  clc
+  adc #$28
+.write_nametable_hi
+  sta PPUADDR
+  lda TEXT_LINE
+  asl A
+  asl A
+  asl A
+  asl A
+  asl A
+  ora TEXT_POS
+  sta PPUADDR
+  pla
+  rts
+
+  ; печать символа из регистра A
+symbol_print:
+  pha
+  ; при удержании любой кнопки ускоряем
+  lda BUTTONS
+  bne .skip_sprite_draw
+  ; подготавливаем палитру спрайтов
+  lda #LOW(symbols_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(symbols_palette)
+  sta PAL_SOURCE_ADDR+1
+  jsr preload_palette
+  jsr dim
+  jsr dim
+  jsr dim
+  jsr load_sprite_palette
+
+  ; настраиваем спрайт
+  lda #0
+  sta OAMADDR
+  lda TEXT_LINE
+  asl A
+  asl A
+  asl A
+  sec
+  sbc SCROLL_POS
+  bcs .not_ovf
+  sec
+  sbc #16
+.not_ovf
+  sta OAMDATA
+
+  pla
+  sta OAMDATA
+  pha
+  lda #0
+  sta OAMDATA
+  lda TEXT_POS
+  asl A
+  asl A
+  asl A
+  sta OAMDATA
+  jsr wait_blank
+
+  ; плавно увеличиваем яркость
+  jsr preload_palette
+  jsr dim
+  jsr dim
+  jsr load_sprite_palette
+  jsr wait_blank
+
+  jsr preload_palette
+  jsr dim
+  jsr load_sprite_palette
+  jsr wait_blank
+
+  ; скрываем спрайт
+  lda #0
+  sta OAMADDR
+  ldx #$FF
+  sta OAMDATA
+
+.skip_sprite_draw:
+  ; вычисляем адреса
+  jsr symbol_address
+  pla
+  ; печатаем символ
+  sta PPUDATA
+  jsr wait_blank
+  rts
+
+  ; переход на следующую строку
+next_line:
+  jsr wait_blank
+  lda #0
+  sta TEXT_POS
+  ; увеличиваем номер строки
+  inc TEXT_LINE
+  lda TEXT_LINE
+  ; если он равен 30...
+  cmp #30
+  bne .scroll_check
+  ; обнуляем строку
+  lda #0
+  sta TEXT_LINE
+  ; меняем nametable
+  lda TEXT_NAMETABLE
+  eor #1
+  sta TEXT_NAMETABLE
+  ; проверка, не пора ли начинать скроллинг
+.scroll_check:
+  lda TEXT_LINE
+  cmp #27 ; на какой строке начинать скроллить
+  bne .not_scroll_start
+  ; пора
+  inc TEXT_SCROLL_STARTED
+.not_scroll_start:
+  ; включен ли сейчас скроллиг?
+  lda TEXT_SCROLL_STARTED
+  beq .clear_line
+  ; увеличиваем скроллинг на 8 пикселей
+  lda SCROLL_TARGET_POS
+  clc
+  adc #8
+  ; если дошли до 240й строки, обнуляем
+  cmp #240
+  bne .not_next_nt
+  lda #0
+.not_next_nt:
+  sta SCROLL_TARGET_POS
+  ; очищаем строку на противоположном nametable
+.clear_line:
+  bit PPUSTATUS
+  lda TEXT_NAMETABLE
+  bne .second_nametable
+  lda TEXT_LINE
+  lsr A
+  lsr A
+  lsr A
+  clc
+  adc #$28
+  jmp .write_nametable_hi
+.second_nametable:
+  lda TEXT_LINE
+  lsr A
+  lsr A
+  lsr A
+  clc
+  adc #$20
+.write_nametable_hi
+  sta PPUADDR
+  lda TEXT_LINE
+  asl A
+  asl A
+  asl A
+  asl A
+  asl A  
+  sta PPUADDR
+  ldx #32
+  lda #0
+.next_char:
+  sta PPUDATA
+  dex
+  bne .next_char
+.end:
+  jsr wait_blank
+  rts
+
 title_palette:
   .incbin "title_palette_0.bin"
   .incbin "title_palette_1.bin"
@@ -206,6 +478,9 @@ frame_2_palette:
 
 symbols_palette:
   .incbin "symbols_palette.bin"
+  .db 0, 0, 0, 0
+  .db 0, 0, 0, 0
+  .db 0, 0, 0, 0
 
 text_0:
   .incbin "text_0.bin"
