@@ -41,6 +41,7 @@ BUTTONS_TMP         .rs 1 ; temporary variable for buttons
 LAST_KONAMI_BUTTON  .rs 1 ; last button state for Konami Code check
 KONAMI_CODE_STATE   .rs 1 ; Konami Code state
 KONAMI_CODE_TRIGGERED .rs 1 ; Konami Code triggered flag
+SYMBOL_COUNTER      .rs 1 ; счтётчик напечатанных символов
 
   .rsset $0400
 SPRITES             .rs 256 ; тут хранятся спрайты
@@ -73,7 +74,7 @@ Start:
   jsr select_prg_bank
   lda #0 ; номер трека
   ; в регистре X задаётся регион: PAL или NTSC
-  ldx CONSOLE_TYPE
+  ldx <CONSOLE_TYPE
   jsr $A999  ; Инициализируем музыкальный проигрыватель
 
   ldx #30
@@ -86,9 +87,9 @@ Start:
   lda #BANK(title_name_table)/2
   jsr select_prg_bank
   lda #LOW(title_name_table)
-  sta COPY_SOURCE_ADDR
+  sta <COPY_SOURCE_ADDR
   lda #HIGH(title_name_table)
-  sta COPY_SOURCE_ADDR+1
+  sta <COPY_SOURCE_ADDR+1
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
   lda #(BANK(title_pattern)-16)/2
@@ -99,14 +100,14 @@ Start:
   lda #0
   jsr select_prg_bank
   lda #LOW(title_palette)
-  sta PAL_SOURCE_ADDR
+  sta <PAL_SOURCE_ADDR
   lda #HIGH(title_palette)
-  sta PAL_SOURCE_ADDR+1
+  sta <PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
   cli ; музыка
   ; ждём любую кнопку  
-  jsr wait_any_button
+  jsr pause
   ; убавляем яркость
   jsr dim_out
 
@@ -118,9 +119,9 @@ Start:
   lda #BANK(frame_0_name_table)/2
   jsr select_prg_bank
   lda #LOW(frame_0_name_table)
-  sta COPY_SOURCE_ADDR
+  sta <COPY_SOURCE_ADDR
   lda #HIGH(frame_0_name_table)
-  sta COPY_SOURCE_ADDR+1
+  sta <COPY_SOURCE_ADDR+1
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
   lda #(BANK(frame_0_pattern)-16)/2
@@ -131,22 +132,22 @@ Start:
   lda #0
   jsr select_prg_bank
   lda #LOW(frame_0_palette)
-  sta PAL_SOURCE_ADDR
+  sta <PAL_SOURCE_ADDR
   lda #HIGH(frame_0_palette)
-  sta PAL_SOURCE_ADDR+1
+  sta <PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
   ; ждём любую кнопку  
-  jsr wait_any_button
+  jsr pause
   ; убавляем яркость
   jsr dim_out
 
   jsr wait_blank
   ; отображаем текст
   lda #LOW(text_0)
-  sta TEXT_SOURCE_ADDR
+  sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_0)
-  sta TEXT_SOURCE_ADDR+1
+  sta <TEXT_SOURCE_ADDR+1
   lda #0
   jsr select_prg_bank
   jsr print_text
@@ -159,9 +160,9 @@ Start:
   lda #BANK(frame_1_name_table)/2
   jsr select_prg_bank
   lda #LOW(frame_1_name_table)
-  sta COPY_SOURCE_ADDR
+  sta <COPY_SOURCE_ADDR
   lda #HIGH(frame_1_name_table)
-  sta COPY_SOURCE_ADDR+1
+  sta <COPY_SOURCE_ADDR+1
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
   lda #(BANK(frame_1_pattern)-16)/2
@@ -172,22 +173,22 @@ Start:
   lda #0
   jsr select_prg_bank
   lda #LOW(frame_1_palette)
-  sta PAL_SOURCE_ADDR
+  sta <PAL_SOURCE_ADDR
   lda #HIGH(frame_1_palette)
-  sta PAL_SOURCE_ADDR+1
+  sta <PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
   ; ждём любую кнопку  
-  jsr wait_any_button
+  jsr pause
   ; убавляем яркость
   jsr dim_out
 
   jsr wait_blank
   ; отображаем текст
   lda #LOW(text_1)
-  sta TEXT_SOURCE_ADDR
+  sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_1)
-  sta TEXT_SOURCE_ADDR+1
+  sta <TEXT_SOURCE_ADDR+1
   lda #0
   jsr select_prg_bank
   jsr print_text
@@ -200,9 +201,9 @@ Start:
   lda #BANK(frame_2_name_table)/2
   jsr select_prg_bank
   lda #LOW(frame_2_name_table)
-  sta COPY_SOURCE_ADDR
+  sta <COPY_SOURCE_ADDR
   lda #HIGH(frame_2_name_table)
-  sta COPY_SOURCE_ADDR+1
+  sta <COPY_SOURCE_ADDR+1
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
   lda #(BANK(frame_2_pattern)-16)/2
@@ -213,22 +214,22 @@ Start:
   lda #0
   jsr select_prg_bank
   lda #LOW(frame_2_palette)
-  sta PAL_SOURCE_ADDR
+  sta <PAL_SOURCE_ADDR
   lda #HIGH(frame_2_palette)
-  sta PAL_SOURCE_ADDR+1
+  sta <PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
   ; ждём любую кнопку  
-  jsr wait_any_button
+  jsr pause
   ; убавляем яркость
   jsr dim_out
 
   jsr wait_blank
   ; отображаем текст
   lda #LOW(text_2)
-  sta TEXT_SOURCE_ADDR
+  sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_2)
-  sta TEXT_SOURCE_ADDR+1
+  sta <TEXT_SOURCE_ADDR+1
   lda #0
   jsr select_prg_bank
   jsr print_text
@@ -240,9 +241,9 @@ Start:
   lda #BANK(title_name_table)/2
   jsr select_prg_bank
   lda #LOW(title_name_table)
-  sta COPY_SOURCE_ADDR
+  sta <COPY_SOURCE_ADDR
   lda #HIGH(title_name_table)
-  sta COPY_SOURCE_ADDR+1
+  sta <COPY_SOURCE_ADDR+1
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
   lda #(BANK(title_pattern)-16)/2
@@ -253,26 +254,26 @@ Start:
   lda #0
   jsr select_prg_bank
   lda #LOW(title_palette)
-  sta PAL_SOURCE_ADDR
+  sta <PAL_SOURCE_ADDR
   lda #HIGH(title_palette)
-  sta PAL_SOURCE_ADDR+1
+  sta <PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
   ; ждём любую кнопку  
-  jsr wait_any_button
+  jsr pause
   ; убавляем яркость
   jsr dim_out
 
   jsr wait_blank
   ; отображаем текст
   lda #LOW(text_3)
-  sta TEXT_SOURCE_ADDR
+  sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_3)
-  sta TEXT_SOURCE_ADDR+1
+  sta <TEXT_SOURCE_ADDR+1
   lda #0
   jsr select_prg_bank
   lda #1
-  sta THE_END
+  sta <THE_END
   jsr print_text
   
   ; конец
@@ -286,9 +287,9 @@ credits:
   lda #BANK(credits_name_table)/2
   jsr select_prg_bank
   lda #LOW(credits_name_table)
-  sta COPY_SOURCE_ADDR
+  sta <COPY_SOURCE_ADDR
   lda #HIGH(credits_name_table)
-  sta COPY_SOURCE_ADDR+1
+  sta <COPY_SOURCE_ADDR+1
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
   lda #(BANK(credits_pattern)-16)/2
@@ -299,9 +300,9 @@ credits:
   lda #0
   jsr select_prg_bank
   lda #LOW(credits_palette)
-  sta PAL_SOURCE_ADDR
+  sta <PAL_SOURCE_ADDR
   lda #HIGH(credits_palette)
-  sta PAL_SOURCE_ADDR+1
+  sta <PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
 .loop:
@@ -326,7 +327,7 @@ IRQ:
   sta $6000
   jsr read_controller 
   ; возвращаем назад активный банк
-  lda ACTIVE_BANK
+  lda <ACTIVE_BANK
   sta $6000
 
   pla
@@ -345,9 +346,9 @@ NMI:
   txa
   pha
 
-  inc FRAMES
+  inc <FRAMES
   ; активируем прерывание
-  lda ACTIVE_BANK
+  lda <ACTIVE_BANK
   ora #%10000000
   sta $6000
 
@@ -361,7 +362,7 @@ NMI:
 
   ; субрутина выбора PRG банка
 select_prg_bank:
-  sta ACTIVE_BANK
+  sta <ACTIVE_BANK
   sta $6000
   rts
 
@@ -376,9 +377,9 @@ enable_ppu:
   bit PPUSTATUS
   lda #0
   sta PPUSCROLL
-  lda SCROLL_POS
+  lda <SCROLL_POS
   sta PPUSCROLL
-  lda SCROLL_NT
+  lda <SCROLL_NT
   bne .second_nt
   lda #%10000000
   jmp .write_ppuctrl
@@ -387,7 +388,7 @@ enable_ppu:
 .write_ppuctrl
   sta PPUCTRL
   lda #%00001110
-  ldx SPRITES_ENABLED
+  ldx <SPRITES_ENABLED
   beq .sprites_disabled
   ora #%00010000
 .sprites_disabled:
@@ -406,9 +407,9 @@ disable_ppu:
   ; субрутина простого ожидания vblank
 wait_blank_simple:
   pha
-  lda FRAMES
+  lda <FRAMES
 .loop:
-  cmp FRAMES
+  cmp <FRAMES
   beq .loop
   pla
   rts
@@ -422,18 +423,18 @@ wait_blank:
   pha
 
   ; скроллим, если нужно
-  lda SCROLL_POS
-  cmp SCROLL_TARGET_POS
+  lda <SCROLL_POS
+  cmp <SCROLL_TARGET_POS
   beq .end_scroll
-  inc SCROLL_POS
-  lda SCROLL_POS
+  inc <SCROLL_POS
+  lda <SCROLL_POS
   cmp #240
   bne .end_scroll
   lda #0
-  sta SCROLL_POS
-  lda SCROLL_NT
+  sta <SCROLL_POS
+  lda <SCROLL_NT
   eor #1
-  sta SCROLL_NT  
+  sta <SCROLL_NT  
 .end_scroll:
 
   jsr enable_ppu
@@ -484,9 +485,9 @@ dim_out:
 
 reset_scroll:
   lda #0
-  sta SCROLL_POS
-  sta SCROLL_NT
-  sta SCROLL_TARGET_POS
+  sta <SCROLL_POS
+  sta <SCROLL_NT
+  sta <SCROLL_TARGET_POS
   rts
 
   ; waiting for button release
@@ -504,6 +505,13 @@ wait_any_button:
   lda <BUTTONS
   beq wait_any_button
 .end
+  rts
+
+pause:
+  jsr wait_buttons_not_pressed
+  ldx #150
+  jsr wait_blank_x
+  jsr wait_any_button
   rts
 
   .include "bank0_subroutines.asm"
