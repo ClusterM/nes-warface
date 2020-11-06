@@ -355,19 +355,6 @@ select_chr_bank:
   sta $6001
 
 enable_ppu:
-  bit PPUSTATUS
-  lda #0
-  sta PPUSCROLL
-  lda <SCROLL_POS
-  sta PPUSCROLL
-  lda <SCROLL_NT
-  bne .second_nt
-  lda #%10000000
-  jmp .write_ppuctrl
-.second_nt:
-  lda #%10000010
-.write_ppuctrl
-  sta PPUCTRL
   lda #%00001110
   ldx <SPRITES_ENABLED
   beq .sprites_disabled
@@ -418,7 +405,21 @@ wait_blank:
   sta <SCROLL_NT  
 .end_scroll:
 
-  jsr enable_ppu
+  bit PPUSTATUS
+  lda #0
+  sta PPUSCROLL
+  lda <SCROLL_POS
+  sta PPUSCROLL
+  lda <SCROLL_NT
+  bne .second_nt
+  lda #%10000000
+  jmp .write_ppuctrl
+.second_nt:
+  lda #%10000010
+.write_ppuctrl
+  sta PPUCTRL
+
+  jsr wait_blank_simple
 
   pla
   tax

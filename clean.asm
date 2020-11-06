@@ -40,6 +40,7 @@ init:
   ; определяем тип консоли
   lda #%00000000 ; отключаем NMI
   sta PPUCTRL
+  bit PPUSTATUS
 console_detect_init:
   bit PPUSTATUS
   bpl console_detect_init

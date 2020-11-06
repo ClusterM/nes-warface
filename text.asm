@@ -1,5 +1,5 @@
 print_text_s:
-  jsr wait_blank
+  jsr wait_blank_simple
   ; выключаем PPU
   jsr disable_ppu
   ; выбираем последний CHR банк
@@ -13,6 +13,7 @@ print_text_s:
   lda #HIGH(symbols_palette)
   sta <PAL_SOURCE_ADDR+1
   jsr preload_palette
+  jsr wait_blank_simple
   jsr load_palette
   lda #3
   sta <TEXT_LINE

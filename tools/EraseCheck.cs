@@ -4,7 +4,7 @@
     {
         void Run(IFamicomDumperConnection dumper)
         {
-s            const int prgBankSize = 0x4000;
+            const int prgBankSize = 0x4000;
             const int chrBankSize = 0x1000;
             int problems = 0;
             
