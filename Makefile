@@ -1,12 +1,72 @@
+STORY?=1
+
+ifeq ($(STORY),1)
+	FRAME_0_IMAGE=images/pagoda.jpg
+	FRAME_1_IMAGE=images/myatej.gif
+	FRAME_2_IMAGE=images/glaza.jpg
+	TEXT_0=text/0_0.txt
+	TEXT_1=text/0_1.txt
+	TEXT_2=text/0_2.txt
+	TEXT_3=text/0_3.txt
+endif
+ifeq ($(STORY),2)
+	FRAME_0_IMAGE=images/rayon4.jpg
+	FRAME_1_IMAGE=images/sputnik.jpg
+	FRAME_2_IMAGE=images/sindikat.gif
+	TEXT_0=text/1_0.txt
+	TEXT_1=text/1_1.txt
+	TEXT_2=text/1_2.txt
+	TEXT_3=text/1_3.txt
+endif
+ifeq ($(STORY),3)
+	FRAME_0_IMAGE=images/buhanka.gif 
+	FRAME_1_IMAGE=images/chernobyl.gif 
+	FRAME_2_IMAGE=images/sworm.jpg 
+	TEXT_0=text/2_0.txt
+	TEXT_1=text/2_1.txt
+	TEXT_2=text/2_2.txt
+	TEXT_3=text/2_3.txt
+endif
+ifeq ($(STORY),4)
+	FRAME_0_IMAGE=images/gorgona.jpg
+	FRAME_1_IMAGE=images/dira.jpg
+	FRAME_2_IMAGE=images/sworm.jpg
+	TEXT_0=text/3_0.txt
+	TEXT_1=text/3_1.txt
+	TEXT_2=text/3_2.txt
+	TEXT_3=text/3_3.txt
+endif
+ifeq ($(STORY),5)
+	FRAME_0_IMAGE=images/shkola.jpg
+	FRAME_1_IMAGE=images/zapravka.jpg
+	FRAME_2_IMAGE=images/sputnik.jpg
+	TEXT_0=text/4_0.txt
+	TEXT_1=text/4_1.txt
+	TEXT_2=text/4_2.txt
+	TEXT_3=text/4_3.txt
+endif
+ifeq ($(STORY),6)
+	FRAME_0_IMAGE=images/trailer-park.jpg
+	FRAME_1_IMAGE=images/belaya_akula.jpg
+	FRAME_2_IMAGE=images/sworm.jpg
+	TEXT_0=text/5_0.txt
+	TEXT_1=text/5_1.txt
+	TEXT_2=text/5_2.txt
+	TEXT_3=text/5_3.txt
+endif
+ifeq ($(STORY),7)
+	FRAME_0_IMAGE=images/myatej.gif
+	FRAME_1_IMAGE=images/trailer-park.jpg
+	FRAME_2_IMAGE=images/zapravka.jpg
+	TEXT_0=text/6_0.txt
+	TEXT_1=text/6_1.txt
+	TEXT_2=text/6_2.txt
+	TEXT_3=text/6_3.txt
+endif
+
 TITLE_IMAGE=images/logo_warface.jpg
-FRAME_0_IMAGE=images/pagoda.jpg
-FRAME_1_IMAGE=images/myatej.jpg
-FRAME_2_IMAGE=images/glaza.jpg
-TEXT_0=text/0_0.txt
-TEXT_1=text/0_1.txt
-TEXT_2=text/0_2.txt
-TEXT_3=text/0_3.txt
 CREDITS_IMAGE=images/credits.png
+SYMBOLS_IMAGE=images/symbols.png
 
 NESASM=tools/NESASM.EXE 
 EMU=fceux
@@ -18,12 +78,12 @@ INCLUDES=bank0_subroutines.asm nametables.asm patterns.asm buttons.asm
 EXECUTABLE=warface.nes
 MUSIC=Warface-11.nsf
 MUSIC_BIN=music.bin
-SYMBOLS_IMAGE=images/symbols.png
 
 TITLE_IMAGE_0=title_0.png
 TITLE_IMAGE_1=title_1.png
 TITLE_IMAGE_2=title_2.png
 TITLE_IMAGE_3=title_3.png
+
 TITLE_PATTERN_0=title_pattern_0.bin
 TITLE_PATTERN_1=title_pattern_1.bin
 TITLE_PATTERN_2=title_pattern_2.bin
@@ -133,7 +193,7 @@ TEXT_3_BIN=text_3.bin
 SYMBOLS_PATTERN=symbols_pattern.bin
 SYMBOLS_PALETTE=symbols_palette.bin
 
-all: $(SOURCE) $(EXECUTABLE)
+all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(SOURCE) $(INCLUDES) $(MUSIC_BIN) \
 $(TITLE_PATTERN_0) $(TITLE_PATTERN_1) $(TITLE_PATTERN_2) $(TITLE_PATTERN_3) \

@@ -20,11 +20,13 @@ PPUDATA   .equ $2007
 OAMDMA    .equ $4014
 
   .rsset $0020 ; адрес для переменных
+FRAMES              .rs 1 ; счётчик NMI
 ACTIVE_BANK         .rs 1 ; текущий PRG банк
 CONSOLE_TYPE        .rs 1 ; тип консоли
 COPY_SOURCE_ADDR    .rs 2 ; исходный адрес для копирования данный
 PAL_SOURCE_ADDR     .rs 2 ; исходный адрес для загрузки палитры
 PALETTE_CACHE       .rs 16 ; кеш для временного хранения палитры
+SPRITES_ENABLED     .rs 1 ; включены ли спрайты
 TEXT_SOURCE_ADDR    .rs 2 ; исходный адрес текста
 TEXT_LINE           .rs 1 ; текущая строка текста на экране
 TEXT_POS            .rs 2 ; текущая позиция текста в строке
@@ -33,6 +35,7 @@ TEXT_SCROLL_STARTED .rs 1 ; флаг, что запущен автоскролл
 SCROLL_POS          .rs 1 ; текущая позиция скроллинга
 SCROLL_NT           .rs 1 ; текущий nametable скроллинга
 SCROLL_TARGET_POS   .rs 1 ; целевая позиция скроллинга
+THE_END             .rs 1 ; флаг, что пора зациклить
 
   .bank 12     ; PRG банк #12, середина PRG
   .org $9213
@@ -62,8 +65,11 @@ Start:
   jsr select_prg_bank
   lda #0 ; номер трека
   ; в регистре X задаётся регион: PAL или NTSC
-  ldx CONSOLE_TYPE
+  ldx #CONSOLE_TYPE
   jsr $A999  ; Инициализируем музыкальный проигрыватель
+
+  ldx #30
+  jsr wait_blank_x
 
   jsr disable_ppu
   ; обнуляем скроллинг
@@ -95,16 +101,6 @@ Start:
   jsr wait_any_button
   ; убавляем яркость
   jsr dim_out
-
-  jsr wait_blank
-  ; отображаем текст
-  lda #LOW(text_0)
-  sta TEXT_SOURCE_ADDR
-  lda #HIGH(text_0)
-  sta TEXT_SOURCE_ADDR+1
-  lda #0
-  jsr select_prg_bank
-  jsr print_text
 
   jsr wait_blank
   jsr disable_ppu
@@ -139,9 +135,9 @@ Start:
 
   jsr wait_blank
   ; отображаем текст
-  lda #LOW(text_1)
+  lda #LOW(text_0)
   sta TEXT_SOURCE_ADDR
-  lda #HIGH(text_1)
+  lda #HIGH(text_0)
   sta TEXT_SOURCE_ADDR+1
   lda #0
   jsr select_prg_bank
@@ -170,6 +166,47 @@ Start:
   lda #LOW(frame_1_palette)
   sta PAL_SOURCE_ADDR
   lda #HIGH(frame_1_palette)
+  sta PAL_SOURCE_ADDR+1
+  ; плавно прибавляем яркость
+  jsr dim_in
+  ; ждём любую кнопку  
+  jsr wait_any_button
+  ; убавляем яркость
+  jsr dim_out
+
+  jsr wait_blank
+  ; отображаем текст
+  lda #LOW(text_1)
+  sta TEXT_SOURCE_ADDR
+  lda #HIGH(text_1)
+  sta TEXT_SOURCE_ADDR+1
+  lda #0
+  jsr select_prg_bank
+  jsr print_text
+
+  jsr wait_blank
+  jsr disable_ppu
+  ; обнуляем скроллинг
+  jsr reset_scroll
+  ; загружаем nametable
+  lda #BANK(frame_2_name_table)/2
+  jsr select_prg_bank
+  lda #LOW(frame_2_name_table)
+  sta COPY_SOURCE_ADDR
+  lda #HIGH(frame_2_name_table)
+  sta COPY_SOURCE_ADDR+1
+  jsr load_name_table
+  ; выбираем CHR банк с автопереключением
+  lda #(BANK(frame_2_pattern)-16)/2
+  jsr select_chr_bank
+  ; включаем PPU
+  jsr enable_ppu
+  ; загружаем палитру
+  lda #0
+  jsr select_prg_bank
+  lda #LOW(frame_2_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(frame_2_palette)
   sta PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
@@ -226,11 +263,42 @@ Start:
   sta TEXT_SOURCE_ADDR+1
   lda #0
   jsr select_prg_bank
+  lda #1
+  sta THE_END
   jsr print_text
+  
+  ; конец
 
-main_loop:
+  ; авторы проекта
+credits:
+  jsr disable_ppu
+  ; обнуляем скроллинг
+  jsr reset_scroll
+  ; загружаем nametable
+  lda #BANK(credits_name_table)/2
+  jsr select_prg_bank
+  lda #LOW(credits_name_table)
+  sta COPY_SOURCE_ADDR
+  lda #HIGH(credits_name_table)
+  sta COPY_SOURCE_ADDR+1
+  jsr load_name_table
+  ; выбираем CHR банк с автопереключением
+  lda #(BANK(credits_pattern)-16)/2
+  jsr select_chr_bank
+  ; включаем PPU
+  jsr enable_ppu
+  ; загружаем палитру
+  lda #0
+  jsr select_prg_bank
+  lda #LOW(credits_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(credits_palette)
+  sta PAL_SOURCE_ADDR+1
+  ; плавно прибавляем яркость
+  jsr dim_in
+.loop:
   jsr wait_blank
-  jmp main_loop
+  jmp .loop
 
 IRQ:
   php
@@ -269,7 +337,8 @@ NMI:
   txa
   pha
 
-  ; запускаем таймер, чтобы потом играть музыку
+  inc FRAMES
+  ; активируем прерывание
   lda ACTIVE_BANK
   ora #%10000000
   sta $6000
@@ -309,7 +378,11 @@ enable_ppu:
   lda #%10000010
 .write_ppuctrl
   sta PPUCTRL
-  lda #%00011110
+  lda #%00001110
+  ldx SPRITES_ENABLED
+  beq .sprites_disabled
+  ora #%00010000
+.sprites_disabled:
   sta PPUMASK
   jsr wait_blank_simple
   rts
@@ -323,12 +396,18 @@ disable_ppu:
   rts
 
   ; субрутина простого ожидания vblank
+wait_blank_ppu_status:
+  bit PPUSTATUS
+  bpl wait_blank_ppu_status
+  rts
+
+  ; субрутина простого ожидания vblank
 wait_blank_simple:
   pha
-  bit PPUSTATUS
+  lda FRAMES
 .loop:
-  lda PPUSTATUS  ; load A with value at location $2002
-  bpl .loop  ; if bit 7 is not set (not VBlank) keep checking
+  cmp FRAMES
+  beq .loop
   pla
   rts
 
@@ -364,8 +443,7 @@ wait_blank:
   pla
   rts
 
-wait_blank5:
-  ldx #5
+wait_blank_x:
 .loop:
   jsr wait_blank
   dex
@@ -419,8 +497,11 @@ wait_buttons_not_pressed:
   ; waiting for any button pressed
 wait_any_button:
   jsr wait_blank ; waiting for v-blank
+  lda KONAMI_CODE_TRIGGERED
+  bne .end
   lda <BUTTONS
   beq wait_any_button
+.end
   rts
 
   .include "bank0_subroutines.asm"

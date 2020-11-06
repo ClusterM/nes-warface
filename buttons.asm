@@ -18,7 +18,6 @@ read_controller:
 
   ; real controller read, stores buttons to BUTTONS_TMP
 .real:
-  ;php
   lda #1
   sta $4016
   lda #0

@@ -3,8 +3,9 @@
   .org $8000
 
 init:
-  lda #%00000000 ; выключаем пока что PPU
+  lda #%10000000 ; выключаем пока что PPU, но оставляем NMI
   sta PPUCTRL
+  lda #%00000000
   sta PPUMASK
   jsr wait_blank_simple
   jsr load_black  ; делаем экран чёрным
@@ -22,6 +23,7 @@ init:
 
   lda #0
   sta OAMADDR
+  lda #$FF
   ldx #0
 .clean_oam_next:
   sta OAMDATA
@@ -190,11 +192,13 @@ dim_in_s:
   jsr dim
   jsr dim
   jsr load_palette
-  jsr wait_blank5
+  ldx #5
+  jsr wait_blank_x
   jsr preload_palette
   jsr dim
   jsr load_palette
-  jsr wait_blank5
+  ldx #5
+  jsr wait_blank_x
   jsr preload_palette
   jsr load_palette
   jsr wait_blank
@@ -204,18 +208,21 @@ dim_out_s:
   jsr preload_palette
   jsr dim
   jsr load_palette
-  jsr wait_blank5
+  ldx #5
+  jsr wait_blank_x
   jsr preload_palette
   jsr dim
   jsr dim
   jsr load_palette
-  jsr wait_blank5
+  ldx #5
+  jsr wait_blank_x
   jsr preload_palette
   jsr dim
   jsr dim
   jsr dim
   jsr load_palette
-  jsr wait_blank5
+  ldx #5
+  jsr wait_blank_x
   jsr load_black
   jsr wait_blank
   rts
@@ -235,14 +242,17 @@ print_text:
   sta PAL_SOURCE_ADDR+1
   jsr preload_palette
   jsr load_palette
-  lda #2
+  lda #3
   sta TEXT_LINE
   lda #1
   sta TEXT_POS
+  sta SPRITES_ENABLED
   lda #0
   sta TEXT_NAMETABLE
   sta TEXT_SCROLL_STARTED
   jsr reset_scroll
+  jsr wait_blank_simple
+  jsr enable_ppu
 .next_char:
   ldy #0
   lda [TEXT_SOURCE_ADDR], y
@@ -255,6 +265,8 @@ print_text:
 .not_next_line:
   ; печатаем символ
   jsr symbol_print
+  lda KONAMI_CODE_TRIGGERED
+  bne .exit_to_credits
 .inc_source_pos:
   inc TEXT_SOURCE_ADDR
   bne .inc_text_pos
@@ -263,13 +275,33 @@ print_text:
   inc TEXT_POS
   jmp .next_char
 .end:
+  lda THE_END
+  beq .not_the_end
+.endless_loop:
+  jsr wait_blank
+  lda KONAMI_CODE_TRIGGERED
+  bne .exit_to_credits
+  jmp .endless_loop
+.not_the_end
+  jsr wait_buttons_not_pressed
   jsr wait_any_button
   lda #LOW(symbols_palette)
   sta PAL_SOURCE_ADDR
   lda #HIGH(symbols_palette)
   sta PAL_SOURCE_ADDR+1
   jsr dim_out
+  lda #0
+  sta SPRITES_ENABLED
   rts
+.exit_to_credits:
+  lda #LOW(symbols_palette)
+  sta PAL_SOURCE_ADDR
+  lda #HIGH(symbols_palette)
+  sta PAL_SOURCE_ADDR+1
+  jsr dim_out
+  lda #0
+  sta SPRITES_ENABLED
+  jmp credits
 
   ; определяем адрес, куда писать символ
 symbol_address:
@@ -310,18 +342,55 @@ symbol_print:
   ; при удержании любой кнопки ускоряем
   lda BUTTONS
   bne .skip_sprite_draw
-  ; подготавливаем палитру спрайтов
-  lda #LOW(symbols_palette)
-  sta PAL_SOURCE_ADDR
-  lda #HIGH(symbols_palette)
-  sta PAL_SOURCE_ADDR+1
+  
+  ; настраиваем спрайт
+  jsr wait_blank
+  lda #$FF
+  sta OAMDATA
+  pla
+  sta OAMDATA
+  pha
+  lda #0
+  sta OAMDATA
+  lda TEXT_POS
+  asl A
+  asl A
+  asl A
+  sta OAMDATA
+
+  jsr wait_blank
+
+  ; плавно увеличиваем яркость
   jsr preload_palette
   jsr dim
   jsr dim
-  jsr dim
+  jsr wait_blank
+  jsr .set_sprite_y
   jsr load_sprite_palette
 
-  ; настраиваем спрайт
+  jsr preload_palette
+  jsr dim
+  jsr wait_blank
+  jsr .set_sprite_y
+  jsr load_sprite_palette
+
+.skip_sprite_draw:
+  ; скрываем спрайт
+  jsr wait_blank
+  lda #0
+  sta OAMADDR
+  lda #$FF
+  sta OAMDATA
+  ; вычисляем адреса
+  ;jsr wait_blank
+  jsr symbol_address
+  pla
+  ; печатаем символ
+  sta PPUDATA
+  jsr wait_blank
+  rts
+
+.set_sprite_y:
   lda #0
   sta OAMADDR
   lda TEXT_LINE
@@ -334,45 +403,15 @@ symbol_print:
   sec
   sbc #16
 .not_ovf
+  sec
+  sbc #1
+  ldx SCROLL_POS
+  cpx SCROLL_TARGET_POS
+  beq .not_scrolling
+  sec
+  sbc #1
+.not_scrolling:
   sta OAMDATA
-
-  pla
-  sta OAMDATA
-  pha
-  lda #0
-  sta OAMDATA
-  lda TEXT_POS
-  asl A
-  asl A
-  asl A
-  sta OAMDATA
-  jsr wait_blank
-
-  ; плавно увеличиваем яркость
-  jsr preload_palette
-  jsr dim
-  jsr dim
-  jsr load_sprite_palette
-  jsr wait_blank
-
-  jsr preload_palette
-  jsr dim
-  jsr load_sprite_palette
-  jsr wait_blank
-
-  ; скрываем спрайт
-  lda #0
-  sta OAMADDR
-  ldx #$FF
-  sta OAMDATA
-
-.skip_sprite_draw:
-  ; вычисляем адреса
-  jsr symbol_address
-  pla
-  ; печатаем символ
-  sta PPUDATA
-  jsr wait_blank
   rts
 
   ; переход на следующую строку
@@ -416,6 +455,7 @@ next_line:
   sta SCROLL_TARGET_POS
   ; очищаем строку на противоположном nametable
 .clear_line:
+  jsr wait_blank
   bit PPUSTATUS
   lda TEXT_NAMETABLE
   bne .second_nametable
@@ -475,6 +515,12 @@ frame_2_palette:
   .incbin "frame_2_palette_1.bin"
   .incbin "frame_2_palette_2.bin"
   .incbin "frame_2_palette_3.bin"
+
+credits_palette:
+  .incbin "credits_palette_0.bin"
+  .incbin "credits_palette_1.bin"
+  .incbin "credits_palette_2.bin"
+  .incbin "credits_palette_3.bin"
 
 symbols_palette:
   .incbin "symbols_palette.bin"
