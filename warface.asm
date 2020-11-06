@@ -36,6 +36,14 @@ SCROLL_POS          .rs 1 ; текущая позиция скроллинга
 SCROLL_NT           .rs 1 ; текущий nametable скроллинга
 SCROLL_TARGET_POS   .rs 1 ; целевая позиция скроллинга
 THE_END             .rs 1 ; флаг, что пора зациклить
+BUTTONS             .rs 1 ; currently pressed buttons
+BUTTONS_TMP         .rs 1 ; temporary variable for buttons
+LAST_KONAMI_BUTTON  .rs 1 ; last button state for Konami Code check
+KONAMI_CODE_STATE   .rs 1 ; Konami Code state
+KONAMI_CODE_TRIGGERED .rs 1 ; Konami Code triggered flag
+
+  .rsset $0400
+SPRITES             .rs 256 ; тут хранятся спрайты
 
   .bank 12     ; PRG банк #12, середина PRG
   .org $9213
@@ -65,7 +73,7 @@ Start:
   jsr select_prg_bank
   lda #0 ; номер трека
   ; в регистре X задаётся регион: PAL или NTSC
-  ldx #CONSOLE_TYPE
+  ldx CONSOLE_TYPE
   jsr $A999  ; Инициализируем музыкальный проигрыватель
 
   ldx #30
@@ -393,12 +401,6 @@ disable_ppu:
   lda #%00000000
   sta PPUMASK
   jsr wait_blank_simple
-  rts
-
-  ; субрутина простого ожидания vblank
-wait_blank_ppu_status:
-  bit PPUSTATUS
-  bpl wait_blank_ppu_status
   rts
 
   ; субрутина простого ожидания vblank

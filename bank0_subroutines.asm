@@ -21,29 +21,40 @@ init:
   iny  
   bne .memory_clean_loop
 
+  ; очистка спрайтов
+  lda #LOW(SPRITES)
+  sta COPY_SOURCE_ADDR
+  lda #HIGH(SPRITES)
+  sta COPY_SOURCE_ADDR+1
+  lda #$FF
+  ldy #0
+.sprites_clean_loop:
+  sta [COPY_SOURCE_ADDR], y
+  iny  
+  bne .sprites_clean_loop
   lda #0
   sta OAMADDR
-  lda #$FF
-  ldx #0
-.clean_oam_next:
-  sta OAMDATA
-  inx
-  bne .clean_oam_next
+  lda #HIGH(SPRITES)  
+  sta OAMDMA
 
   ; определяем тип консоли
-  jsr wait_blank_simple
-console_detect:
+  lda #%00000000 ; отключаем NMI
+  sta PPUCTRL
+console_detect_init:
+  bit PPUSTATUS
+  bpl console_detect_init
+console_detect_loop:
   inx
   bne console_detect_s
   iny
 console_detect_s:  
-  lda PPUSTATUS
-  bpl console_detect
+  bit PPUSTATUS
+  bpl console_detect_loop
   lda #$00
   cpy #$09
   bne console_detect_not_ntsc
 console_detect_not_ntsc:
-  cpy #$0A
+  cpy #$08
   bne console_detect_not_pal
   ora #$01
 console_detect_not_pal:
@@ -52,6 +63,9 @@ console_detect_not_pal:
   ora #$01
 console_detect_not_dendy:
   sta <CONSOLE_TYPE
+  ; включаем NMI
+  lda #%10000000
+  sta PPUCTRL
 
   ; Обнуляем звуковые регистры
   lda #0
@@ -228,6 +242,7 @@ dim_out_s:
   rts
 
 print_text:
+  jsr wait_blank
   ; выключаем PPU
   jsr disable_ppu
   ; выбираем последний CHR банк
@@ -344,21 +359,23 @@ symbol_print:
   bne .skip_sprite_draw
   
   ; настраиваем спрайт
-  jsr wait_blank
   lda #$FF
-  sta OAMDATA
+  sta SPRITES
   pla
-  sta OAMDATA
+  sta SPRITES+1
   pha
   lda #0
-  sta OAMDATA
+  sta SPRITES+2
   lda TEXT_POS
   asl A
   asl A
   asl A
-  sta OAMDATA
-
+  sta SPRITES+3
   jsr wait_blank
+  lda #0
+  sta OAMADDR
+  lda #HIGH(SPRITES)
+  sta OAMDMA
 
   ; плавно увеличиваем яркость
   jsr preload_palette
@@ -376,11 +393,13 @@ symbol_print:
 
 .skip_sprite_draw:
   ; скрываем спрайт
+  lda #$FF
+  sta SPRITES
   jsr wait_blank
   lda #0
   sta OAMADDR
-  lda #$FF
-  sta OAMDATA
+  lda #HIGH(SPRITES)
+  sta OAMDMA
   ; вычисляем адреса
   ;jsr wait_blank
   jsr symbol_address
@@ -391,8 +410,6 @@ symbol_print:
   rts
 
 .set_sprite_y:
-  lda #0
-  sta OAMADDR
   lda TEXT_LINE
   asl A
   asl A
@@ -411,7 +428,11 @@ symbol_print:
   sec
   sbc #1
 .not_scrolling:
-  sta OAMDATA
+  sta SPRITES
+  lda #0
+  sta OAMADDR
+  lda #HIGH(SPRITES)
+  sta OAMDMA
   rts
 
   ; переход на следующую строку

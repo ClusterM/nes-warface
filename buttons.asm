@@ -1,8 +1,3 @@
-BUTTONS .rs 1 ; currently pressed buttons
-BUTTONS_TMP .rs 1 ; temporary variable for buttons
-LAST_KONAMI_BUTTON .rs 1 ; last button state for Konami Code check
-KONAMI_CODE_STATE .rs 1 ; Konami Code state
-KONAMI_CODE_TRIGGERED .rs 1 ; Konami Code triggered flag
 
   ; controller reading, two times
 read_controller:
