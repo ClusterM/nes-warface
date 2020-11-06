@@ -4,8 +4,7 @@
     {
         void Run(IFamicomDumperConnection dumper)
         {
-            var rom = new NesFile("warface.nes");
-            const int prgBankSize = 0x4000;
+s            const int prgBankSize = 0x4000;
             const int chrBankSize = 0x1000;
             int problems = 0;
             

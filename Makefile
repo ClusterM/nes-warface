@@ -1,4 +1,4 @@
-STORY?=3
+STORY?=4
 
 ifeq ($(STORY),1)
 	FRAME_0_IMAGE=images/pagoda.jpg
@@ -37,7 +37,7 @@ ifeq ($(STORY),4)
 	TEXT_3=text/3_3.txt
 endif
 ifeq ($(STORY),5)
-	FRAME_0_IMAGE=images/shkola.jpg
+	FRAME_0_IMAGE=images/shkola.gif
 	FRAME_1_IMAGE=images/zapravka.jpg
 	FRAME_2_IMAGE=images/sputnik.jpg
 	TEXT_0=text/4_0.txt
@@ -307,7 +307,7 @@ $(SYMBOLS_PATTERN) $(SYMBOLS_PALETTE): $(SYMBOLS_IMAGE)
 write: $(EXECUTABLE)
 	tools\FamicomDumper.exe script --csfile tools\WriteWarface.cs --sound
 
-erase: $(EXECUTABLE)
+erase:
 	tools\FamicomDumper.exe script --csfile tools\EraseCheck.cs --sound
 
 .PHONY: clean write erase
