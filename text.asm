@@ -1,240 +1,4 @@
-  ; далее методы в нулевом банке
-  .bank 0
-  .org $8000
-
-init:
-  lda #%10000000 ; выключаем пока что PPU, но оставляем NMI
-  sta PPUCTRL
-  lda #%00000000
-  sta PPUMASK
-  jsr wait_blank_simple
-  jsr load_black  ; делаем экран чёрным
-
-  ; очистка памяти
-  lda #$00
-  sta COPY_SOURCE_ADDR
-  sta COPY_SOURCE_ADDR+1
-  lda #0
-  ldy #$22
-.memory_clean_loop:
-  sta [COPY_SOURCE_ADDR], y
-  iny  
-  bne .memory_clean_loop
-
-  ; очистка спрайтов
-  lda #LOW(SPRITES)
-  sta COPY_SOURCE_ADDR
-  lda #HIGH(SPRITES)
-  sta COPY_SOURCE_ADDR+1
-  lda #$FF
-  ldy #0
-.sprites_clean_loop:
-  sta [COPY_SOURCE_ADDR], y
-  iny  
-  bne .sprites_clean_loop
-  lda #0
-  sta OAMADDR
-  lda #HIGH(SPRITES)  
-  sta OAMDMA
-
-  ; определяем тип консоли
-  lda #%00000000 ; отключаем NMI
-  sta PPUCTRL
-console_detect_init:
-  bit PPUSTATUS
-  bpl console_detect_init
-console_detect_loop:
-  inx
-  bne console_detect_s
-  iny
-console_detect_s:  
-  bit PPUSTATUS
-  bpl console_detect_loop
-  lda #$01
-  cpy #$09
-  bne console_detect_end
-  lda #$00
-console_detect_end:
-  sta <CONSOLE_TYPE
-  ; включаем NMI
-  lda #%10000000
-  sta PPUCTRL
-
-  ; Обнуляем звуковые регистры
-  lda #0
-  sta $4000
-  sta $4001
-  sta $4002
-  sta $4003
-  sta $4004
-  sta $4005
-  sta $4006
-  sta $4007
-  sta $4009
-  sta $400A
-  sta $400C
-  sta $400D
-  sta $400E
-  sta $400F
-  sta $4010
-  sta $4011
-  sta $4012
-  sta $4013
-  lda #$0F
-  sta $4015
-  lda #$40
-  sta $4017
-  lda #0
-
-  rts
-
-  ; очищаем nametable
-clear_screen:
-  lda #$20
-  sta PPUADDR
-  lda #$00
-  sta PPUADDR
-  lda #$00
-  ldx #0
-  ldy #$10
-.loop:
-  sta PPUDATA
-  inx
-  bne .loop
-  dey
-  bne .loop
-  rts
-
-load_black:
-  ; загружаем пустую палитру по адресу $3F00 в PPU
-  lda #$3F
-  sta PPUADDR
-  lda #$00
-  sta PPUADDR
-  ldx #$00
-  lda #$1D ; чёрный цвет
-.loop:
-  sta PPUDATA
-  inx
-  cpx #32
-  bne .loop
-  rts
-
-  ; загружаем 16 байт палитры во временную память
-preload_palette:
-  ldy #$00
-  ldx #16
-.loop:
-  lda [PAL_SOURCE_ADDR], y
-  sta PALETTE_CACHE, y
-  iny
-  dex
-  bne .loop
-  rts
-
-  ; загружаем 16 байт палитры в $3F00
-load_palette:
-  lda #LOW(PALETTE_CACHE)
-  sta <COPY_SOURCE_ADDR
-  lda #HIGH(PALETTE_CACHE)
-  sta <COPY_SOURCE_ADDR+1
-  lda #$3F
-  sta $2006
-  lda #$00
-  sta $2006
-  ldy #$00
-  ldx #16
-.loop:
-  lda [COPY_SOURCE_ADDR], y
-  sta $2007
-  iny
-  dex
-  bne .loop
-  bit PPUSTATUS
-  rts
-
-  ; загружаем 16 байт палитры в $3F10
-load_sprite_palette:
-  lda #LOW(PALETTE_CACHE)
-  sta <COPY_SOURCE_ADDR
-  lda #HIGH(PALETTE_CACHE)
-  sta <COPY_SOURCE_ADDR+1
-  lda #$3F
-  sta $2006
-  lda #$10
-  sta $2006
-  ldy #$00
-  ldx #16
-.loop:
-  lda [COPY_SOURCE_ADDR], y
-  sta $2007
-  iny
-  dex
-  bne .loop
-  bit PPUSTATUS
-  rts
-
-  ; затемняет загруженную палитру
-dim:
-  ldx #0
-.loop:
-  lda PALETTE_CACHE, x
-  sec
-  sbc #$10
-  bpl .not_minus
-  lda #$1D  
-.not_minus:
-  cmp #$0D
-  bne .not_very_black
-  lda #$1D
-.not_very_black:
-  sta PALETTE_CACHE, x
-  inx
-  cpx #16
-  bne .loop
-  rts
-
-dim_in_s:
-  jsr preload_palette
-  jsr dim
-  jsr dim
-  jsr load_palette
-  ldx #5
-  jsr wait_blank_x
-  jsr preload_palette
-  jsr dim
-  jsr load_palette
-  ldx #5
-  jsr wait_blank_x
-  jsr preload_palette
-  jsr load_palette
-  jsr wait_blank
-  rts
-
-dim_out_s:
-  jsr preload_palette
-  jsr dim
-  jsr load_palette
-  ldx #5
-  jsr wait_blank_x
-  jsr preload_palette
-  jsr dim
-  jsr dim
-  jsr load_palette
-  ldx #5
-  jsr wait_blank_x
-  jsr preload_palette
-  jsr dim
-  jsr dim
-  jsr dim
-  jsr load_palette
-  ldx #5
-  jsr wait_blank_x
-  jsr load_black
-  jsr wait_blank
-  rts
-
-print_text:
+print_text_s:
   jsr wait_blank
   ; выключаем PPU
   jsr disable_ppu
@@ -293,22 +57,22 @@ print_text:
 .not_the_end
   jsr wait_buttons_not_pressed
   jsr wait_any_button
+  lda #0
+  sta SPRITES_ENABLED
   lda #LOW(symbols_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(symbols_palette)
   sta <PAL_SOURCE_ADDR+1
   jsr dim_out
-  lda #0
-  sta SPRITES_ENABLED
   rts
 .exit_to_credits:
+  lda #0
+  sta SPRITES_ENABLED
   lda #LOW(symbols_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(symbols_palette)
   sta <PAL_SOURCE_ADDR+1
   jsr dim_out
-  lda #0
-  sta SPRITES_ENABLED
   jmp credits
 
   ; определяем адрес, куда писать символ
@@ -372,14 +136,14 @@ symbol_print:
 
   ; плавно увеличиваем яркость
   jsr preload_palette
-  jsr dim
-  jsr dim
+  jsr dim_4
+  jsr dim_4
   jsr wait_blank
   jsr .set_sprite_y
   jsr load_sprite_palette
 
   jsr preload_palette
-  jsr dim
+  jsr dim_4
   jsr wait_blank
   jsr .set_sprite_y
   jsr load_sprite_palette
@@ -513,51 +277,3 @@ next_line:
 .end:
   jsr wait_blank
   rts
-
-title_palette:
-  .incbin "title_palette_0.bin"
-  .incbin "title_palette_1.bin"
-  .incbin "title_palette_2.bin"
-  .incbin "title_palette_3.bin"
-
-frame_0_palette:
-  .incbin "frame_0_palette_0.bin"
-  .incbin "frame_0_palette_1.bin"
-  .incbin "frame_0_palette_2.bin"
-  .incbin "frame_0_palette_3.bin"
-
-frame_1_palette:
-  .incbin "frame_1_palette_0.bin"
-  .incbin "frame_1_palette_1.bin"
-  .incbin "frame_1_palette_2.bin"
-  .incbin "frame_1_palette_3.bin"
-
-frame_2_palette:
-  .incbin "frame_2_palette_0.bin"
-  .incbin "frame_2_palette_1.bin"
-  .incbin "frame_2_palette_2.bin"
-  .incbin "frame_2_palette_3.bin"
-
-credits_palette:
-  .incbin "credits_palette_0.bin"
-  .incbin "credits_palette_1.bin"
-  .incbin "credits_palette_2.bin"
-  .incbin "credits_palette_3.bin"
-
-symbols_palette:
-  .incbin "symbols_palette.bin"
-  .db 0, 0, 0, 0
-  .db 0, 0, 0, 0
-  .db 0, 0, 0, 0
-
-text_0:
-  .incbin "text_0.bin"
-
-text_1:
-  .incbin "text_1.bin"
-
-text_2:
-  .incbin "text_2.bin"
-
-text_3:
-  .incbin "text_3.bin"

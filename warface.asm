@@ -24,6 +24,7 @@ FRAMES              .rs 1 ; счётчик NMI
 ACTIVE_BANK         .rs 1 ; текущий PRG банк
 CONSOLE_TYPE        .rs 1 ; тип консоли
 COPY_SOURCE_ADDR    .rs 2 ; исходный адрес для копирования данный
+COPY_DEST_ADDR      .rs 2 ; целевой адрес для копирования данный
 PAL_SOURCE_ADDR     .rs 2 ; исходный адрес для загрузки палитры
 PALETTE_CACHE       .rs 16 ; кеш для временного хранения палитры
 SPRITES_ENABLED     .rs 1 ; включены ли спрайты
@@ -97,8 +98,6 @@ Start:
   ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #0
-  jsr select_prg_bank
   lda #LOW(title_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(title_palette)
@@ -129,8 +128,6 @@ Start:
   ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #0
-  jsr select_prg_bank
   lda #LOW(frame_0_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(frame_0_palette)
@@ -148,8 +145,6 @@ Start:
   sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_0)
   sta <TEXT_SOURCE_ADDR+1
-  lda #0
-  jsr select_prg_bank
   jsr print_text
 
   jsr wait_blank
@@ -170,8 +165,6 @@ Start:
   ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #0
-  jsr select_prg_bank
   lda #LOW(frame_1_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(frame_1_palette)
@@ -189,8 +182,6 @@ Start:
   sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_1)
   sta <TEXT_SOURCE_ADDR+1
-  lda #0
-  jsr select_prg_bank
   jsr print_text
 
   jsr wait_blank
@@ -211,8 +202,6 @@ Start:
   ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #0
-  jsr select_prg_bank
   lda #LOW(frame_2_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(frame_2_palette)
@@ -230,8 +219,6 @@ Start:
   sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_2)
   sta <TEXT_SOURCE_ADDR+1
-  lda #0
-  jsr select_prg_bank
   jsr print_text
 
   jsr disable_ppu
@@ -251,8 +238,6 @@ Start:
   ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #0
-  jsr select_prg_bank
   lda #LOW(title_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(title_palette)
@@ -270,8 +255,6 @@ Start:
   sta <TEXT_SOURCE_ADDR
   lda #HIGH(text_3)
   sta <TEXT_SOURCE_ADDR+1
-  lda #0
-  jsr select_prg_bank
   lda #1
   sta <THE_END
   jsr print_text
@@ -297,8 +280,6 @@ credits:
   ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #0
-  jsr select_prg_bank
   lda #LOW(credits_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(credits_palette)
@@ -453,7 +434,7 @@ wait_blank_x:
   bne .loop
   rts
 
-  ; загружаем nametable в $1000
+  ; загружаем nametable в $2000
 load_name_table:
   lda #$20
   sta $2006
@@ -483,6 +464,12 @@ dim_out:
   jsr dim_out_s
   rts
 
+print_text:
+  lda #0
+  jsr select_prg_bank
+  jsr print_text_s
+  rts
+
 reset_scroll:
   lda #0
   sta <SCROLL_POS
@@ -509,12 +496,70 @@ wait_any_button:
 
 pause:
   jsr wait_buttons_not_pressed
-  ldx #150
-  jsr wait_blank_x
+  ;ldx #150
+  ;jsr wait_blank_x
   jsr wait_any_button
   rts
 
-  .include "bank0_subroutines.asm"
+  .bank 0
+  .org $8000
+
+  .include "clean.asm"
+  .include "dimming.asm"
+  .include "text.asm"
   .include "buttons.asm"
+
+  .bank 1
+  .org $A000
+
+title_palette:
+  .incbin "title_palette_0.bin"
+  .incbin "title_palette_1.bin"
+  .incbin "title_palette_2.bin"
+  .incbin "title_palette_3.bin"
+
+frame_0_palette:
+  .incbin "frame_0_palette_0.bin"
+  .incbin "frame_0_palette_1.bin"
+  .incbin "frame_0_palette_2.bin"
+  .incbin "frame_0_palette_3.bin"
+
+frame_1_palette:
+  .incbin "frame_1_palette_0.bin"
+  .incbin "frame_1_palette_1.bin"
+  .incbin "frame_1_palette_2.bin"
+  .incbin "frame_1_palette_3.bin"
+
+frame_2_palette:
+  .incbin "frame_2_palette_0.bin"
+  .incbin "frame_2_palette_1.bin"
+  .incbin "frame_2_palette_2.bin"
+  .incbin "frame_2_palette_3.bin"
+
+credits_palette:
+  .incbin "credits_palette_0.bin"
+  .incbin "credits_palette_1.bin"
+  .incbin "credits_palette_2.bin"
+  .incbin "credits_palette_3.bin"
+
+symbols_palette:
+  .incbin "symbols_palette.bin"
+  .incbin "warface_palette.bin"
+  .db 0, 0, 0, 0
+  .db 0, 0, 0, 0
+
+text_0:
+  .incbin "text_0.bin"
+
+text_1:
+  .incbin "text_1.bin"
+
+text_2:
+  .incbin "text_2.bin"
+
+text_3:
+  .incbin "text_3.bin"
+
+  .include "sprites.asm"
   .include "nametables.asm"
   .include "patterns.asm"

@@ -1,9 +1,9 @@
-STORY?=1
+STORY?=3
 
 ifeq ($(STORY),1)
 	FRAME_0_IMAGE=images/pagoda.jpg
 	FRAME_1_IMAGE=images/myatej.gif
-	FRAME_2_IMAGE=images/glaza.jpg
+	FRAME_2_IMAGE=images/glaza.gif
 	TEXT_0=text/0_0.txt
 	TEXT_1=text/0_1.txt
 	TEXT_2=text/0_2.txt
@@ -21,16 +21,16 @@ endif
 ifeq ($(STORY),3)
 	FRAME_0_IMAGE=images/buhanka.gif 
 	FRAME_1_IMAGE=images/chernobyl.gif 
-	FRAME_2_IMAGE=images/sworm.jpg 
+	FRAME_2_IMAGE=images/sworm.gif
 	TEXT_0=text/2_0.txt
 	TEXT_1=text/2_1.txt
 	TEXT_2=text/2_2.txt
 	TEXT_3=text/2_3.txt
 endif
 ifeq ($(STORY),4)
-	FRAME_0_IMAGE=images/gorgona.jpg
-	FRAME_1_IMAGE=images/dira.jpg
-	FRAME_2_IMAGE=images/sworm.jpg
+	FRAME_0_IMAGE=images/gorgona.gif
+	FRAME_1_IMAGE=images/dira.gif
+	FRAME_2_IMAGE=images/sworm.gif
 	TEXT_0=text/3_0.txt
 	TEXT_1=text/3_1.txt
 	TEXT_2=text/3_2.txt
@@ -48,7 +48,7 @@ endif
 ifeq ($(STORY),6)
 	FRAME_0_IMAGE=images/trailer-park.jpg
 	FRAME_1_IMAGE=images/belaya_akula.jpg
-	FRAME_2_IMAGE=images/sworm.jpg
+	FRAME_2_IMAGE=images/sworm.gif
 	TEXT_0=text/5_0.txt
 	TEXT_1=text/5_1.txt
 	TEXT_2=text/5_2.txt
@@ -67,6 +67,7 @@ endif
 TITLE_IMAGE=images/logo_warface.jpg
 CREDITS_IMAGE=images/credits.png
 SYMBOLS_IMAGE=images/symbols.png
+LOGO_IMAGE=images/warface_logo_small.png
 
 NESASM=tools/NESASM.EXE 
 EMU=fceux
@@ -74,7 +75,7 @@ SPLITTER=tools/ImageSplitter.exe
 TILER=tools/NesTiler.exe
 TEXT_CONVERTER=tools/TextConverter.exe
 SOURCE=warface.asm
-INCLUDES=bank0_subroutines.asm nametables.asm patterns.asm buttons.asm
+INCLUDES=clean.asm dimming.asm text.asm nametables.asm patterns.asm buttons.asm sprites.asm
 EXECUTABLE=warface.nes
 MUSIC=Warface-11.nsf
 MUSIC_BIN=music.bin
@@ -185,6 +186,9 @@ CREDITS_PALETTE_1=credits_palette_1.bin
 CREDITS_PALETTE_2=credits_palette_2.bin
 CREDITS_PALETTE_3=credits_palette_3.bin
 
+WARFACE_PATTERN=warface_logo_pattern.bin
+WARFACE_PALETTE=warface_palette.bin
+
 TEXT_0_BIN=text_0.bin
 TEXT_1_BIN=text_1.bin
 TEXT_2_BIN=text_2.bin
@@ -216,6 +220,7 @@ $(CREDITS_PATTERN_0) $(CREDITS_PATTERN_1) $(CREDITS_PATTERN_2) $(CREDITS_PATTERN
 $(CREDITS_NAME_TABLE_0) $(CREDITS_NAME_TABLE_1) $(CREDITS_NAME_TABLE_2) $(CREDITS_NAME_TABLE_3) \
 $(CREDITS_ATTR_TABLE_0) $(CREDITS_ATTR_TABLE_1) $(CREDITS_ATTR_TABLE_2) $(CREDITS_ATTR_TABLE_3) \
 $(CREDITS_PALETTE_0) $(CREDITS_PALETTE_1) $(CREDITS_PALETTE_2) $(CREDITS_PALETTE_3) \
+$(WARFACE_PATTERN) $(WARFACE_PALETTE) \
 $(TEXT_0_BIN) $(TEXT_1_BIN) $(TEXT_2_BIN) $(TEXT_3_BIN) $(SYMBOLS_PATTERN) $(SYMBOLS_PALETTE)
 	rm -f $(EXECUTABLE)
 	$(NESASM) $(SOURCE) -o $(EXECUTABLE) --symbols=$(EXECUTABLE) -iWss
@@ -281,6 +286,9 @@ $(CREDITS_PATTERN_0) $(CREDITS_PATTERN_1) $(CREDITS_PATTERN_2) $(CREDITS_PATTERN
 	--out-attribute-table0 $(CREDITS_ATTR_TABLE_0) --out-attribute-table1 $(CREDITS_ATTR_TABLE_1) --out-attribute-table2 $(CREDITS_ATTR_TABLE_2) --out-attribute-table3 $(CREDITS_ATTR_TABLE_3) \
 	--out-palette0 $(CREDITS_PALETTE_0) --out-palette1 $(CREDITS_PALETTE_1) --out-palette2 $(CREDITS_PALETTE_2) --out-palette3 $(CREDITS_PALETTE_3)
 
+$(WARFACE_PATTERN) $(WARFACE_PALETTE): $(LOGO_IMAGE)
+	$(TILER) -i0 $(LOGO_IMAGE) --mode sprites --enable-palettes 1 --out-pattern-table0 $(WARFACE_PATTERN) --out-palette1 $(WARFACE_PALETTE)
+
 $(TEXT_0_BIN): $(TEXT_0)
 	$(TEXT_CONVERTER) $(TEXT_0) $(TEXT_0_BIN)
 
@@ -294,6 +302,12 @@ $(TEXT_3_BIN): $(TEXT_3)
 	$(TEXT_CONVERTER) $(TEXT_3) $(TEXT_3_BIN)
 
 $(SYMBOLS_PATTERN) $(SYMBOLS_PALETTE): $(SYMBOLS_IMAGE)
-	$(TILER) -i0 $(SYMBOLS_IMAGE) --enable-palettes 0	--out-pattern-table0 $(SYMBOLS_PATTERN) --out-palette0 $(SYMBOLS_PALETTE)
+	$(TILER) -i0 $(SYMBOLS_IMAGE) --enable-palettes 0	--out-pattern-table0 $(SYMBOLS_PATTERN) --out-palette0 $(SYMBOLS_PALETTE) --bgcolor #000000
 
-.PHONY: clean
+write: $(EXECUTABLE)
+	tools\FamicomDumper.exe script --csfile tools\WriteWarface.cs --sound
+
+erase: $(EXECUTABLE)
+	tools\FamicomDumper.exe script --csfile tools\EraseCheck.cs --sound
+
+.PHONY: clean write erase

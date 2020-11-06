@@ -63,3 +63,5 @@ credits_pattern:
   .incbin "symbols_pattern.bin"
   .db 0, 0, 0, 0, 0, 0, 0, 0
   .db 0, 0, 0, 0, 0, 0, 0, 0
+  .org $1C00
+  .incbin "warface_logo_pattern.bin"
