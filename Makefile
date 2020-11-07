@@ -75,10 +75,11 @@ SPLITTER=tools/ImageSplitter.exe
 TILER=tools/NesTiler.exe
 TEXT_CONVERTER=tools/TextConverter.exe
 SOURCE=warface.asm
-INCLUDES=main.asm clean.asm dimming.asm text.asm nametables.asm patterns.asm buttons.asm sprites.asm
 EXECUTABLE=warface.nes
 MUSIC=Warface-12.nsf
 MUSIC_BIN=music.bin
+MUSIC_ASM=music.asm
+INCLUDES=main.asm clean.asm dimming.asm text.asm nametables.asm patterns.asm buttons.asm sprites.asm $(MUSIC_ASM)
 
 TITLE_IMAGE_0=title_0.png
 TITLE_IMAGE_1=title_1.png
@@ -231,7 +232,7 @@ $(MUSIC_BIN):
 build: $(EXECUTABLE)
 
 clean:
-	rm -f $(EXECUTABLE) *.lst *.nl *.png *.bin
+	rm -f $(EXECUTABLE) *.lst *.nl *.png *.bin $(MUSIC_ASM)
 
 run: $(EXECUTABLE)
 	$(EMU) $(EXECUTABLE)
@@ -303,6 +304,9 @@ $(TEXT_3_BIN): $(TEXT_3)
 
 $(SYMBOLS_PATTERN) $(SYMBOLS_PALETTE): $(SYMBOLS_IMAGE)
 	$(TILER) -i0 $(SYMBOLS_IMAGE) --enable-palettes 0	--out-pattern-table0 $(SYMBOLS_PATTERN) --out-palette0 $(SYMBOLS_PALETTE) --bgcolor #000000
+
+$(MUSIC_ASM): $(MUSIC)
+	printf "NSF_LOAD_ADDR .equ `hexdump $(MUSIC) --skip 8 --length 2 --format '"$$%X"'`\nNSF_INIT_ADDR .equ `hexdump $(MUSIC) --skip 10 --length 2 --format '"$$%X"'`\nNSF_PLAY_ADDR .equ `hexdump $(MUSIC) --skip 12 --length 2 --format '"$$%X"'`" > music.asm
 
 write: $(EXECUTABLE)
 	tools\FamicomDumper.exe script --csfile tools\WriteWarface.cs --sound

@@ -48,7 +48,8 @@ SYMBOL_COUNTER      .rs 1 ; счтётчик напечатанных симво
 SPRITES             .rs 256 ; тут хранятся спрайты
 
   .bank 12     ; PRG банк #12, середина PRG
-  .org $9152
+  .include "music.asm"
+  .org NSF_LOAD_ADDR
 music:
   .incbin    "music.bin" ; Музыка
 
@@ -100,7 +101,7 @@ IRQ:
   lda #BANK(music)/2
   sta $6000
   ; играем музыку
-  jsr $A99C
+  jsr NSF_PLAY_ADDR
   ; читаем контроллер
   lda #BANK(read_controller)/2
   sta $6000
@@ -168,7 +169,7 @@ init_music:
   ; в регистре X задаётся регион: PAL или NTSC
   ldx <CONSOLE_TYPE
   ; инициализируем музыкальный проигрыватель
-  jsr $A999
+  jsr NSF_INIT_ADDR
   pla
   jsr select_prg_bank
   rts
