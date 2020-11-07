@@ -1,4 +1,4 @@
-STORY?=4
+STORY?=3
 
 ifeq ($(STORY),1)
 	FRAME_0_IMAGE=images/pagoda.jpg
@@ -77,7 +77,7 @@ TEXT_CONVERTER=tools/TextConverter.exe
 SOURCE=warface.asm
 INCLUDES=clean.asm dimming.asm text.asm nametables.asm patterns.asm buttons.asm sprites.asm
 EXECUTABLE=warface.nes
-MUSIC=Warface-11.nsf
+MUSIC=Warface-12.nsf
 MUSIC_BIN=music.bin
 
 TITLE_IMAGE_0=title_0.png

@@ -48,7 +48,7 @@ SYMBOL_COUNTER      .rs 1 ; счтётчик напечатанных симво
 SPRITES             .rs 256 ; тут хранятся спрайты
 
   .bank 12     ; PRG банк #12, середина PRG
-  .org $9213
+  .org $9152
   .incbin    "music.bin" ; Музыка
 
   .bank 15     ; PRG банк #15, конец PRG
@@ -73,11 +73,14 @@ Start:
   ; предпоследний банк
   lda #6
   jsr select_prg_bank
-  lda #0 ; номер трека
+  ; номер трека
+  lda <CONSOLE_TYPE
   ; в регистре X задаётся регион: PAL или NTSC
   ldx <CONSOLE_TYPE
-  jsr $A999  ; Инициализируем музыкальный проигрыватель
+  ; инициализируем музыкальный проигрыватель
+  jsr $A999
 
+  ; небольшая пауза после включения
   ldx #30
   jsr wait_blank_x
 

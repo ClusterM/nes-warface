@@ -40,7 +40,6 @@ load_palette:
   iny
   dex
   bne .loop
-  bit PPUSTATUS
   rts
 
   ; загружаем 16 байт палитры в $3F10
