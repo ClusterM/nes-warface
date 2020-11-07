@@ -104,7 +104,7 @@ dim_4:
   rts
 
   ; плавно проявляет экран
-dim_in_s:
+dim_in:
   jsr preload_palette
   jsr dim
   jsr dim
@@ -122,7 +122,7 @@ dim_in_s:
   rts
 
   ; плавно затухает экран
-dim_out_s:
+dim_out:
   jsr preload_palette
   jsr dim
   jsr load_palette

@@ -1,6 +1,6 @@
 ;
 ; Автор: Авдюхин Алексей / clusterrr@clusterrr.com / http://clusterrr.com
-; Специально Mail.ru Group
+; Специально для Mail.ru Group
 ;
 
 ; INES header
@@ -20,11 +20,11 @@ PPUDATA   .equ $2007
 OAMDMA    .equ $4014
 
   .rsset $0020 ; адрес для переменных
+COPY_SOURCE_ADDR    .rs 2 ; исходный адрес для копирования данный
+COPY_DEST_ADDR      .rs 2 ; целевой адрес для копирования данный
 FRAMES              .rs 1 ; счётчик NMI
 ACTIVE_BANK         .rs 1 ; текущий PRG банк
 CONSOLE_TYPE        .rs 1 ; тип консоли
-COPY_SOURCE_ADDR    .rs 2 ; исходный адрес для копирования данный
-COPY_DEST_ADDR      .rs 2 ; целевой адрес для копирования данный
 PAL_SOURCE_ADDR     .rs 2 ; исходный адрес для загрузки палитры
 PALETTE_CACHE       .rs 16 ; кеш для временного хранения палитры
 SPRITES_ENABLED     .rs 1 ; включены ли спрайты
@@ -49,250 +49,44 @@ SPRITES             .rs 256 ; тут хранятся спрайты
 
   .bank 12     ; PRG банк #12, середина PRG
   .org $9152
+music:
   .incbin    "music.bin" ; Музыка
 
   .bank 15     ; PRG банк #15, конец PRG
 
   .org $FFFA  ; Векторы прерываний
   .dw NMI     ; NMI вектор
-  .dw Start    ; Ресет вектор $FFFA
+  .dw RESET   ; Ресет вектор $FFFA
   .dw IRQ     ; IRQ
 
-  .bank 15     ; Тут начинается наш код
-  .org $FD00  ; В памяти NES это будет адрес $8000
+  ; Тут начинается наш код
+  .bank 15
+  .org $FD00
   
-Start:
-  sei ; сразу же отключаем любые прерывания
+RESET:
+  ; сразу же отключаем любые прерывания
+  sei
   ; обнуляем стек
   ldx #$ff
-  txs 
-  ; вызываем функцию инициализации из нулевого банка
-  lda #BANK(init)/2
-  jsr select_prg_bank
-  jsr init
-  ; предпоследний банк
-  lda #6
-  jsr select_prg_bank
-  ; номер трека
-  lda <CONSOLE_TYPE
-  ; в регистре X задаётся регион: PAL или NTSC
-  ldx <CONSOLE_TYPE
-  ; инициализируем музыкальный проигрыватель
-  jsr $A999
+  txs
 
-  ; небольшая пауза после включения
-  ldx #30
-  jsr wait_blank_x
-
-  jsr disable_ppu
-  ; обнуляем скроллинг
-  jsr reset_scroll
-  ; загружаем nametable
-  lda #BANK(title_name_table)/2
-  jsr select_prg_bank
-  lda #LOW(title_name_table)
+  ; обнуление переменных
+clear_memory:
+  lda #$00
   sta <COPY_SOURCE_ADDR
-  lda #HIGH(title_name_table)
   sta <COPY_SOURCE_ADDR+1
-  jsr load_name_table
-  ; выбираем CHR банк с автопереключением
-  lda #(BANK(title_pattern)-16)/2
-  jsr select_chr_bank
-  ; включаем PPU
-  jsr enable_ppu
-  ; загружаем палитру
-  lda #LOW(title_palette)
-  sta <PAL_SOURCE_ADDR
-  lda #HIGH(title_palette)
-  sta <PAL_SOURCE_ADDR+1
-  ; плавно прибавляем яркость
-  jsr dim_in
-  cli ; музыка
-  ; ждём любую кнопку  
-  jsr pause
-  ; убавляем яркость
-  jsr dim_out
+  lda #0
+  ldy #$02
+.memory_clean_loop:
+  sta [COPY_SOURCE_ADDR], y
+  iny  
+  bne .memory_clean_loop
 
-  jsr wait_blank
-  jsr disable_ppu
-  ; обнуляем скроллинг
-  jsr reset_scroll
-  ; загружаем nametable
-  lda #BANK(frame_0_name_table)/2
+  lda #BANK(main)/2
   jsr select_prg_bank
-  lda #LOW(frame_0_name_table)
-  sta <COPY_SOURCE_ADDR
-  lda #HIGH(frame_0_name_table)
-  sta <COPY_SOURCE_ADDR+1
-  jsr load_name_table
-  ; выбираем CHR банк с автопереключением
-  lda #(BANK(frame_0_pattern)-16)/2
-  jsr select_chr_bank
-  ; включаем PPU
-  jsr enable_ppu
-  ; загружаем палитру
-  lda #LOW(frame_0_palette)
-  sta <PAL_SOURCE_ADDR
-  lda #HIGH(frame_0_palette)
-  sta <PAL_SOURCE_ADDR+1
-  ; плавно прибавляем яркость
-  jsr dim_in
-  ; ждём любую кнопку  
-  jsr pause
-  ; убавляем яркость
-  jsr dim_out
+  jmp main
 
-  jsr wait_blank
-  ; отображаем текст
-  lda #LOW(text_0)
-  sta <TEXT_SOURCE_ADDR
-  lda #HIGH(text_0)
-  sta <TEXT_SOURCE_ADDR+1
-  jsr print_text
-
-  jsr wait_blank
-  jsr disable_ppu
-  ; обнуляем скроллинг
-  jsr reset_scroll
-  ; загружаем nametable
-  lda #BANK(frame_1_name_table)/2
-  jsr select_prg_bank
-  lda #LOW(frame_1_name_table)
-  sta <COPY_SOURCE_ADDR
-  lda #HIGH(frame_1_name_table)
-  sta <COPY_SOURCE_ADDR+1
-  jsr load_name_table
-  ; выбираем CHR банк с автопереключением
-  lda #(BANK(frame_1_pattern)-16)/2
-  jsr select_chr_bank
-  ; включаем PPU
-  jsr enable_ppu
-  ; загружаем палитру
-  lda #LOW(frame_1_palette)
-  sta <PAL_SOURCE_ADDR
-  lda #HIGH(frame_1_palette)
-  sta <PAL_SOURCE_ADDR+1
-  ; плавно прибавляем яркость
-  jsr dim_in
-  ; ждём любую кнопку  
-  jsr pause
-  ; убавляем яркость
-  jsr dim_out
-
-  jsr wait_blank
-  ; отображаем текст
-  lda #LOW(text_1)
-  sta <TEXT_SOURCE_ADDR
-  lda #HIGH(text_1)
-  sta <TEXT_SOURCE_ADDR+1
-  jsr print_text
-
-  jsr wait_blank
-  jsr disable_ppu
-  ; обнуляем скроллинг
-  jsr reset_scroll
-  ; загружаем nametable
-  lda #BANK(frame_2_name_table)/2
-  jsr select_prg_bank
-  lda #LOW(frame_2_name_table)
-  sta <COPY_SOURCE_ADDR
-  lda #HIGH(frame_2_name_table)
-  sta <COPY_SOURCE_ADDR+1
-  jsr load_name_table
-  ; выбираем CHR банк с автопереключением
-  lda #(BANK(frame_2_pattern)-16)/2
-  jsr select_chr_bank
-  ; включаем PPU
-  jsr enable_ppu
-  ; загружаем палитру
-  lda #LOW(frame_2_palette)
-  sta <PAL_SOURCE_ADDR
-  lda #HIGH(frame_2_palette)
-  sta <PAL_SOURCE_ADDR+1
-  ; плавно прибавляем яркость
-  jsr dim_in
-  ; ждём любую кнопку  
-  jsr pause
-  ; убавляем яркость
-  jsr dim_out
-
-  jsr wait_blank
-  ; отображаем текст
-  lda #LOW(text_2)
-  sta <TEXT_SOURCE_ADDR
-  lda #HIGH(text_2)
-  sta <TEXT_SOURCE_ADDR+1
-  jsr print_text
-
-  jsr disable_ppu
-  ; обнуляем скроллинг
-  jsr reset_scroll
-  ; загружаем nametable
-  lda #BANK(title_name_table)/2
-  jsr select_prg_bank
-  lda #LOW(title_name_table)
-  sta <COPY_SOURCE_ADDR
-  lda #HIGH(title_name_table)
-  sta <COPY_SOURCE_ADDR+1
-  jsr load_name_table
-  ; выбираем CHR банк с автопереключением
-  lda #(BANK(title_pattern)-16)/2
-  jsr select_chr_bank
-  ; включаем PPU
-  jsr enable_ppu
-  ; загружаем палитру
-  lda #LOW(title_palette)
-  sta <PAL_SOURCE_ADDR
-  lda #HIGH(title_palette)
-  sta <PAL_SOURCE_ADDR+1
-  ; плавно прибавляем яркость
-  jsr dim_in
-  ; ждём любую кнопку  
-  jsr pause
-  ; убавляем яркость
-  jsr dim_out
-
-  jsr wait_blank
-  ; отображаем текст
-  lda #LOW(text_3)
-  sta <TEXT_SOURCE_ADDR
-  lda #HIGH(text_3)
-  sta <TEXT_SOURCE_ADDR+1
-  lda #1
-  sta <THE_END
-  jsr print_text
-  
-  ; конец
-
-  ; авторы проекта
-credits:
-  jsr disable_ppu
-  ; обнуляем скроллинг
-  jsr reset_scroll
-  ; загружаем nametable
-  lda #BANK(credits_name_table)/2
-  jsr select_prg_bank
-  lda #LOW(credits_name_table)
-  sta <COPY_SOURCE_ADDR
-  lda #HIGH(credits_name_table)
-  sta <COPY_SOURCE_ADDR+1
-  jsr load_name_table
-  ; выбираем CHR банк с автопереключением
-  lda #(BANK(credits_pattern)-16)/2
-  jsr select_chr_bank
-  ; включаем PPU
-  jsr enable_ppu
-  ; загружаем палитру
-  lda #LOW(credits_palette)
-  sta <PAL_SOURCE_ADDR
-  lda #HIGH(credits_palette)
-  sta <PAL_SOURCE_ADDR+1
-  ; плавно прибавляем яркость
-  jsr dim_in
-.loop:
-  jsr wait_blank
-  jmp .loop
-
+  ; основное прерывание по таймеру картриджа
 IRQ:
   php
   pha
@@ -303,11 +97,12 @@ IRQ:
 
   ; вызываем код музыки из предпоследнего банка
   ; заодно это делает ack прерыванию
-  lda #6
+  lda #BANK(music)/2
   sta $6000
-  jsr $A99C      ; играем музыку
+  ; играем музыку
+  jsr $A99C
   ; читаем контроллер
-  lda #0
+  lda #BANK(read_controller)/2
   sta $6000
   jsr read_controller 
   ; возвращаем назад активный банк
@@ -321,7 +116,8 @@ IRQ:
   pla
   plp
   rti
-  
+
+  ; прерывание по vblank
 NMI:
   php
   pha
@@ -331,7 +127,7 @@ NMI:
   pha
 
   inc <FRAMES
-  ; активируем прерывание
+  ; запускаем таймер в картридже
   lda <ACTIVE_BANK
   ora #%10000000
   sta $6000
@@ -350,12 +146,36 @@ select_prg_bank:
   sta $6000
   rts
 
-  ; субрутина для выбора CHR банка
-select_chr_bank:
-  asl A
-  asl A
+  ; субрутина для выбора CHR банка с автопереключением
+select_chr_auto_bank:
   ora #%10000000
   sta $6001
+  rts
+
+  ; субрутина для выбора CHR банка без автопереключения
+select_chr_solid_bank:
+  sta $6001
+  rts
+
+  ; инициализация музыки
+init_music:
+  lda ACTIVE_BANK
+  pha
+  lda #BANK(music)/2
+  jsr select_prg_bank
+  ; номер трека
+  lda <CONSOLE_TYPE
+  ; в регистре X задаётся регион: PAL или NTSC
+  ldx <CONSOLE_TYPE
+  ; инициализируем музыкальный проигрыватель
+  jsr $A999
+  pla
+  jsr select_prg_bank
+  rts
+
+  ; далее пихаем код в нулевой банк
+  .bank 0
+  .org $8000
 
 enable_ppu:
   lda #%00001110
@@ -439,7 +259,14 @@ wait_blank_x:
   rts
 
   ; загружаем nametable в $2000
+  ; в A номер банка
+  ; в COPY_SOURCE_ADDR - адрес данных
 load_name_table:
+  tax
+  lda ACTIVE_BANK
+  pha
+  txa
+  jsr select_prg_bank
   lda #$20
   sta $2006
   lda #$00
@@ -454,24 +281,8 @@ load_name_table:
   inc <COPY_SOURCE_ADDR+1
   dex
   bne .loop
-  rts
-
-dim_in:
-  lda #0
+  pla
   jsr select_prg_bank
-  jsr dim_in_s
-  rts
-
-dim_out:
-  lda #0
-  jsr select_prg_bank
-  jsr dim_out_s
-  rts
-
-print_text:
-  lda #0
-  jsr select_prg_bank
-  jsr print_text_s
   rts
 
 reset_scroll:
@@ -505,9 +316,7 @@ pause:
   jsr wait_any_button
   rts
 
-  .bank 0
-  .org $8000
-
+  .include "main.asm"
   .include "clean.asm"
   .include "dimming.asm"
   .include "text.asm"

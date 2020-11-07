@@ -64,7 +64,7 @@ ifeq ($(STORY),7)
 	TEXT_3=text/6_3.txt
 endif
 
-TITLE_IMAGE=images/logo_warface.jpg
+TITLE_IMAGE=images/warface_logo.jpg
 CREDITS_IMAGE=images/credits.png
 SYMBOLS_IMAGE=images/symbols.png
 LOGO_IMAGE=images/warface_logo_small.png
@@ -75,7 +75,7 @@ SPLITTER=tools/ImageSplitter.exe
 TILER=tools/NesTiler.exe
 TEXT_CONVERTER=tools/TextConverter.exe
 SOURCE=warface.asm
-INCLUDES=clean.asm dimming.asm text.asm nametables.asm patterns.asm buttons.asm sprites.asm
+INCLUDES=main.asm clean.asm dimming.asm text.asm nametables.asm patterns.asm buttons.asm sprites.asm
 EXECUTABLE=warface.nes
 MUSIC=Warface-12.nsf
 MUSIC_BIN=music.bin

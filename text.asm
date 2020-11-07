@@ -1,10 +1,10 @@
-print_text_s:
-  jsr wait_blank_simple
+print_text:
+  jsr wait_blank
   ; выключаем PPU
   jsr disable_ppu
   ; выбираем последний CHR банк
   lda #%00011111
-  sta $6001
+  jsr select_chr_solid_bank
   ; очищаем экран
   jsr clear_screen
   ; загружаем палитру
