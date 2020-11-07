@@ -1,4 +1,4 @@
-STORY?=3
+STORY?=1
 
 ifeq ($(STORY),1)
 	FRAME_0_IMAGE=images/pagoda.jpg
@@ -309,9 +309,9 @@ $(MUSIC_ASM): $(MUSIC)
 	printf "NSF_LOAD_ADDR .equ `hexdump $(MUSIC) --skip 8 --length 2 --format '"$$%X"'`\nNSF_INIT_ADDR .equ `hexdump $(MUSIC) --skip 10 --length 2 --format '"$$%X"'`\nNSF_PLAY_ADDR .equ `hexdump $(MUSIC) --skip 12 --length 2 --format '"$$%X"'`" > music.asm
 
 write: $(EXECUTABLE)
-	tools\FamicomDumper.exe script --csfile tools\WriteWarface.cs --sound
+	tools\FamicomDumper.exe script --csfile WriteWarface.cs --sound
 
 erase:
-	tools\FamicomDumper.exe script --csfile tools\EraseCheck.cs --sound
+	tools\FamicomDumper.exe script --csfile EraseCheck.cs --sound
 
 .PHONY: clean write erase

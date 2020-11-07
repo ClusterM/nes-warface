@@ -1,4 +1,8 @@
-﻿namespace com.clusterrr.Warface
+/*
+/   Скрипт дампера для проверки EPROM на чистоту
+*/
+
+namespace com.clusterrr.Warface
 {
     class EraseEeprom
     {

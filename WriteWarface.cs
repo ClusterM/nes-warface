@@ -1,4 +1,8 @@
-﻿using System.Linq;
+/*
+/   Скрипт дампера для записи ROM'а на EPROM.
+*/
+
+using System.Linq;
 
 namespace com.clusterrr.Warface
 {
