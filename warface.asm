@@ -164,6 +164,33 @@ init_music:
   jsr select_prg_bank
   rts
 
+  ; загружаем nametable в $2000
+  ; в A номер банка
+  ; в COPY_SOURCE_ADDR - адрес данных
+load_name_table:
+  tax
+  lda ACTIVE_BANK
+  pha
+  txa
+  jsr select_prg_bank
+  lda #$20
+  sta $2006
+  lda #$00
+  sta $2006
+  ldy #$00
+  ldx #$04
+.loop:
+  lda [COPY_SOURCE_ADDR], y
+  sta $2007
+  iny
+  bne .loop
+  inc <COPY_SOURCE_ADDR+1
+  dex
+  bne .loop
+  pla
+  jsr select_prg_bank
+  rts
+
   ; далее пихаем код в нулевой банк
   .bank 0
   .org $8000
@@ -247,33 +274,6 @@ wait_blank_x:
   jsr wait_blank
   dex
   bne .loop
-  rts
-
-  ; загружаем nametable в $2000
-  ; в A номер банка
-  ; в COPY_SOURCE_ADDR - адрес данных
-load_name_table:
-  tax
-  lda ACTIVE_BANK
-  pha
-  txa
-  jsr select_prg_bank
-  lda #$20
-  sta $2006
-  lda #$00
-  sta $2006
-  ldy #$00
-  ldx #$04
-.loop:
-  lda [COPY_SOURCE_ADDR], y
-  sta $2007
-  iny
-  bne .loop
-  inc <COPY_SOURCE_ADDR+1
-  dex
-  bne .loop
-  pla
-  jsr select_prg_bank
   rts
 
 reset_scroll:
@@ -365,5 +365,9 @@ text_3:
   .incbin "text_3.bin"
 
   .include "sprites.asm"
+
+  .bank 2
+  .org $8000
+
   .include "nametables.asm"
   .include "patterns.asm"

@@ -39,7 +39,7 @@ endif
 ifeq ($(STORY),5)
 	FRAME_0_IMAGE=images/shkola.gif
 	FRAME_1_IMAGE=images/zapravka.gif
-	FRAME_2_IMAGE=images/sputnik.jpg
+	FRAME_2_IMAGE=images/sputnik.gif
 	TEXT_0=text/4_0.txt
 	TEXT_1=text/4_1.txt
 	TEXT_2=text/4_2.txt
@@ -67,7 +67,7 @@ endif
 TITLE_IMAGE=images/warface_logo.gif
 CREDITS_IMAGE=images/credits.png
 SYMBOLS_IMAGE=images/symbols.png
-LOGO_IMAGE=images/warface_logo_small.png
+LOGO_IMAGE=images/warface_logo_small.gif
 
 NESASM=tools/NESASM.EXE 
 EMU=fceux
