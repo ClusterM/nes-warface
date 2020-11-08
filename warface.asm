@@ -9,16 +9,6 @@
   .inesmir 0      ; горизонтальный мирроринг
   .inesmap 3914   ; маппер #3914 (кастомный)
   
-PPUCTRL   .equ $2000
-PPUMASK   .equ $2001
-PPUSTATUS .equ $2002
-OAMADDR   .equ $2003
-OAMDATA   .equ $2004
-PPUSCROLL .equ $2005
-PPUADDR   .equ $2006
-PPUDATA   .equ $2007
-OAMDMA    .equ $4014
-
   .rsset $0020 ; адрес для переменных
 COPY_SOURCE_ADDR    .rs 2 ; исходный адрес для копирования данный
 COPY_DEST_ADDR      .rs 2 ; целевой адрес для копирования данный
