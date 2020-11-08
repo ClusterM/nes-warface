@@ -10,8 +10,8 @@ ifeq ($(STORY),1)
 	TEXT_3=text/0_3.txt
 endif
 ifeq ($(STORY),2)
-	FRAME_0_IMAGE=images/rayon4.jpg
-	FRAME_1_IMAGE=images/sputnik.jpg
+	FRAME_0_IMAGE=images/rayon4.gif
+	FRAME_1_IMAGE=images/sputnik.gif
 	FRAME_2_IMAGE=images/sindikat.gif
 	TEXT_0=text/1_0.txt
 	TEXT_1=text/1_1.txt
@@ -46,7 +46,7 @@ ifeq ($(STORY),5)
 	TEXT_3=text/4_3.txt
 endif
 ifeq ($(STORY),6)
-	FRAME_0_IMAGE=images/trailer-park.jpg
+	FRAME_0_IMAGE=images/trailer-park.gif
 	FRAME_1_IMAGE=images/belaya_akula.gif
 	FRAME_2_IMAGE=images/sworm.gif
 	TEXT_0=text/5_0.txt
@@ -64,7 +64,7 @@ ifeq ($(STORY),7)
 	TEXT_3=text/6_3.txt
 endif
 
-TITLE_IMAGE=images/warface_logo.jpg
+TITLE_IMAGE=images/warface_logo.gif
 CREDITS_IMAGE=images/credits.png
 SYMBOLS_IMAGE=images/symbols.png
 LOGO_IMAGE=images/warface_logo_small.png
