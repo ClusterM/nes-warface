@@ -340,6 +340,12 @@ frame_2_palette:
   .incbin "frame_2_palette_2.bin"
   .incbin "frame_2_palette_3.bin"
 
+frame_3_palette:
+  .incbin "frame_3_palette_0.bin"
+  .incbin "frame_3_palette_1.bin"
+  .incbin "frame_3_palette_2.bin"
+  .incbin "frame_3_palette_3.bin"
+
 credits_palette:
   .incbin "credits_palette_0.bin"
   .incbin "credits_palette_1.bin"

@@ -1,73 +1,96 @@
 STORY?=1
 
+TITLE_IMAGE=images/warface_logo.gif
+PAGODA=images/pagoda.gif
+MYATEJ=images/myatej2.gif
+GLAZA=images/glaza.gif
+RAYON4=images/rayon4_2.gif
+SPUTNIK=images/sputnik.gif
+SINDIKAT=images/sindikat.gif
+BUHANKA=images/buhanka.gif
+CHERNOBYL=images/chernobyl.gif
+SWORM=images/sworm_bw2.gif
+GORGONA=images/gorgona.gif
+DIRA=images/dira.gif
+SHKOLA=images/shkola.gif
+ZAPRAVKA=images/zapravka.gif
+TRAILER_PARK=images/trailer-park2.gif
+BELAYA_AKULA=images/belaya_akula.gif
+CREDITS_IMAGE=images/credits_date.png
+
 ifeq ($(STORY),1)
-	FRAME_0_IMAGE=images/pagoda.gif
-	FRAME_1_IMAGE=images/myatej.gif
-	FRAME_2_IMAGE=images/glaza.gif
+	FRAME_0_IMAGE=$(PAGODA)
+	FRAME_1_IMAGE=$(MYATEJ)
+	FRAME_2_IMAGE=$(GLAZA)
+	FRAME_3_IMAGE=$(TITLE_IMAGE)
 	TEXT_0=text/0_0.txt
 	TEXT_1=text/0_1.txt
 	TEXT_2=text/0_2.txt
 	TEXT_3=text/0_3.txt
 endif
 ifeq ($(STORY),2)
-	FRAME_0_IMAGE=images/rayon4.gif
-	FRAME_1_IMAGE=images/sputnik.gif
-	FRAME_2_IMAGE=images/sindikat.gif
+	FRAME_0_IMAGE=$(RAYON4)
+	FRAME_1_IMAGE=$(SPUTNIK)
+	FRAME_2_IMAGE=$(SINDIKAT)
+	FRAME_3_IMAGE=$(TITLE_IMAGE)
 	TEXT_0=text/1_0.txt
 	TEXT_1=text/1_1.txt
 	TEXT_2=text/1_2.txt
 	TEXT_3=text/1_3.txt
 endif
 ifeq ($(STORY),3)
-	FRAME_0_IMAGE=images/buhanka.gif 
-	FRAME_1_IMAGE=images/chernobyl.gif 
-	FRAME_2_IMAGE=images/sworm.gif
+	FRAME_0_IMAGE=$(BUHANKA)
+	FRAME_1_IMAGE=$(CHERNOBYL)
+	FRAME_2_IMAGE=$(SWORM)
+	FRAME_3_IMAGE=$(TITLE_IMAGE)
 	TEXT_0=text/2_0.txt
 	TEXT_1=text/2_1.txt
 	TEXT_2=text/2_2.txt
 	TEXT_3=text/2_3.txt
 endif
 ifeq ($(STORY),4)
-	FRAME_0_IMAGE=images/gorgona.gif
-	FRAME_1_IMAGE=images/dira.gif
-	FRAME_2_IMAGE=images/sworm.gif
+	FRAME_0_IMAGE=$(GORGONA)
+	FRAME_1_IMAGE=$(DIRA)
+	FRAME_2_IMAGE=$(SWORM)
+	FRAME_3_IMAGE=$(TITLE_IMAGE)
 	TEXT_0=text/3_0.txt
 	TEXT_1=text/3_1.txt
 	TEXT_2=text/3_2.txt
 	TEXT_3=text/3_3.txt
 endif
 ifeq ($(STORY),5)
-	FRAME_0_IMAGE=images/shkola.gif
-	FRAME_1_IMAGE=images/zapravka.gif
-	FRAME_2_IMAGE=images/sputnik.gif
+	FRAME_0_IMAGE=$(SHKOLA)
+	FRAME_1_IMAGE=$(ZAPRAVKA)
+	FRAME_2_IMAGE=$(SPUTNIK)
+	FRAME_3_IMAGE=$(TITLE_IMAGE)
 	TEXT_0=text/4_0.txt
 	TEXT_1=text/4_1.txt
 	TEXT_2=text/4_2.txt
 	TEXT_3=text/4_3.txt
 endif
 ifeq ($(STORY),6)
-	FRAME_0_IMAGE=images/trailer-park.gif
-	FRAME_1_IMAGE=images/belaya_akula.gif
-	FRAME_2_IMAGE=images/sworm.gif
+	FRAME_0_IMAGE=$(TRAILER_PARK)
+	FRAME_1_IMAGE=$(BELAYA_AKULA)
+	FRAME_2_IMAGE=$(SWORM)
+	FRAME_3_IMAGE=$(TITLE_IMAGE)
 	TEXT_0=text/5_0.txt
 	TEXT_1=text/5_1.txt
 	TEXT_2=text/5_2.txt
 	TEXT_3=text/5_3.txt
 endif
 ifeq ($(STORY),7)
-	FRAME_0_IMAGE=images/myatej.gif
-	FRAME_1_IMAGE=images/trailer-park.gif
-	FRAME_2_IMAGE=images/zapravka.gif
+	FRAME_0_IMAGE=$(MYATEJ)
+	FRAME_1_IMAGE=$(TRAILER_PARK)
+	FRAME_2_IMAGE=$(ZAPRAVKA)
+	FRAME_3_IMAGE=$(SWORM)
 	TEXT_0=text/6_0.txt
 	TEXT_1=text/6_1.txt
 	TEXT_2=text/6_2.txt
 	TEXT_3=text/6_3.txt
 endif
 
-TITLE_IMAGE=images/warface_logo.gif
-CREDITS_IMAGE=images/credits.png
-SYMBOLS_IMAGE=images/symbols.png
 LOGO_IMAGE=images/warface_logo_small.gif
+SYMBOLS_IMAGE=images/symbols.png
 
 NESASM=tools/NESASM.EXE 
 EMU=fceux
@@ -166,6 +189,27 @@ FRAME_2_PALETTE_1=frame_2_palette_1.bin
 FRAME_2_PALETTE_2=frame_2_palette_2.bin
 FRAME_2_PALETTE_3=frame_2_palette_3.bin
 
+FRAME_3_IMAGE_0=frame_3_0.png
+FRAME_3_IMAGE_1=frame_3_1.png
+FRAME_3_IMAGE_2=frame_3_2.png
+FRAME_3_IMAGE_3=frame_3_3.png
+FRAME_3_PATTERN_0=frame_3_pattern_0.bin
+FRAME_3_PATTERN_1=frame_3_pattern_1.bin
+FRAME_3_PATTERN_2=frame_3_pattern_2.bin
+FRAME_3_PATTERN_3=frame_3_pattern_3.bin
+FRAME_3_NAME_TABLE_0=frame_3_name_table_0.bin
+FRAME_3_NAME_TABLE_1=frame_3_name_table_1.bin
+FRAME_3_NAME_TABLE_2=frame_3_name_table_2.bin
+FRAME_3_NAME_TABLE_3=frame_3_name_table_3.bin
+FRAME_3_ATTR_TABLE_0=frame_3_attr_table_0.bin
+FRAME_3_ATTR_TABLE_1=frame_3_attr_table_1.bin
+FRAME_3_ATTR_TABLE_2=frame_3_attr_table_2.bin
+FRAME_3_ATTR_TABLE_3=frame_3_attr_table_3.bin
+FRAME_3_PALETTE_0=frame_3_palette_0.bin
+FRAME_3_PALETTE_1=frame_3_palette_1.bin
+FRAME_3_PALETTE_2=frame_3_palette_2.bin
+FRAME_3_PALETTE_3=frame_3_palette_3.bin
+
 CREDITS_IMAGE_0=credits_0.png
 CREDITS_IMAGE_1=credits_1.png
 CREDITS_IMAGE_2=credits_2.png
@@ -217,6 +261,10 @@ $(FRAME_2_PATTERN_0) $(FRAME_2_PATTERN_1) $(FRAME_2_PATTERN_2) $(FRAME_2_PATTERN
 $(FRAME_2_NAME_TABLE_0) $(FRAME_2_NAME_TABLE_1) $(FRAME_2_NAME_TABLE_2) $(FRAME_2_NAME_TABLE_3) \
 $(FRAME_2_ATTR_TABLE_0) $(FRAME_2_ATTR_TABLE_1) $(FRAME_2_ATTR_TABLE_2) $(FRAME_2_ATTR_TABLE_3) \
 $(FRAME_2_PALETTE_0) $(FRAME_2_PALETTE_1) $(FRAME_2_PALETTE_2) $(FRAME_2_PALETTE_3) \
+$(FRAME_3_PATTERN_0) $(FRAME_3_PATTERN_1) $(FRAME_3_PATTERN_2) $(FRAME_3_PATTERN_3) \
+$(FRAME_3_NAME_TABLE_0) $(FRAME_3_NAME_TABLE_1) $(FRAME_3_NAME_TABLE_2) $(FRAME_3_NAME_TABLE_3) \
+$(FRAME_3_ATTR_TABLE_0) $(FRAME_3_ATTR_TABLE_1) $(FRAME_3_ATTR_TABLE_2) $(FRAME_3_ATTR_TABLE_3) \
+$(FRAME_3_PALETTE_0) $(FRAME_3_PALETTE_1) $(FRAME_3_PALETTE_2) $(FRAME_3_PALETTE_3) \
 $(CREDITS_PATTERN_0) $(CREDITS_PATTERN_1) $(CREDITS_PATTERN_2) $(CREDITS_PATTERN_3) \
 $(CREDITS_NAME_TABLE_0) $(CREDITS_NAME_TABLE_1) $(CREDITS_NAME_TABLE_2) $(CREDITS_NAME_TABLE_3) \
 $(CREDITS_ATTR_TABLE_0) $(CREDITS_ATTR_TABLE_1) $(CREDITS_ATTR_TABLE_2) $(CREDITS_ATTR_TABLE_3) \
@@ -288,6 +336,19 @@ $(FRAME_2_PALETTE_0) $(FRAME_2_PALETTE_1) $(FRAME_2_PALETTE_2) $(FRAME_2_PALETTE
 	--out-name-table0 $(FRAME_2_NAME_TABLE_0) --out-name-table1 $(FRAME_2_NAME_TABLE_1) --out-name-table2 $(FRAME_2_NAME_TABLE_2) --out-name-table3 $(FRAME_2_NAME_TABLE_3) \
 	--out-attribute-table0 $(FRAME_2_ATTR_TABLE_0) --out-attribute-table1 $(FRAME_2_ATTR_TABLE_1) --out-attribute-table2 $(FRAME_2_ATTR_TABLE_2) --out-attribute-table3 $(FRAME_2_ATTR_TABLE_3) \
 	--out-palette0 $(FRAME_2_PALETTE_0) --out-palette1 $(FRAME_2_PALETTE_1) --out-palette2 $(FRAME_2_PALETTE_2) --out-palette3 $(FRAME_2_PALETTE_3)
+
+$(FRAME_3_IMAGE_0) $(FRAME_3_IMAGE_1) $(FRAME_3_IMAGE_2) $(FRAME_3_IMAGE_3): $(FRAME_3_IMAGE)
+	$(SPLITTER) $(FRAME_3_IMAGE) $(FRAME_3_IMAGE_0) $(FRAME_3_IMAGE_1) $(FRAME_3_IMAGE_2) $(FRAME_3_IMAGE_3)
+
+$(FRAME_3_PATTERN_0) $(FRAME_3_PATTERN_1) $(FRAME_3_PATTERN_2) $(FRAME_3_PATTERN_3) \
+$(FRAME_3_NAME_TABLE_0) $(FRAME_3_NAME_TABLE_1) $(FRAME_3_NAME_TABLE_2) $(FRAME_3_NAME_TABLE_3) \
+$(FRAME_3_ATTR_TABLE_0) $(FRAME_3_ATTR_TABLE_1) $(FRAME_3_ATTR_TABLE_2) $(FRAME_3_ATTR_TABLE_3) \
+$(FRAME_3_PALETTE_0) $(FRAME_3_PALETTE_1) $(FRAME_3_PALETTE_2) $(FRAME_3_PALETTE_3): $(FRAME_3_IMAGE_0) $(FRAME_3_IMAGE_1) $(FRAME_3_IMAGE_2) $(FRAME_3_IMAGE_3)
+	$(TILER) -i0 $(FRAME_3_IMAGE_0) -i1 $(FRAME_3_IMAGE_1) -i2 $(FRAME_3_IMAGE_2) -i3 $(FRAME_3_IMAGE_3) --enable-palettes 0,1,2,3 \
+	--out-pattern-table0 $(FRAME_3_PATTERN_0) --out-pattern-table1 $(FRAME_3_PATTERN_1) --out-pattern-table2 $(FRAME_3_PATTERN_2) --out-pattern-table3 $(FRAME_3_PATTERN_3) \
+	--out-name-table0 $(FRAME_3_NAME_TABLE_0) --out-name-table1 $(FRAME_3_NAME_TABLE_1) --out-name-table2 $(FRAME_3_NAME_TABLE_2) --out-name-table3 $(FRAME_3_NAME_TABLE_3) \
+	--out-attribute-table0 $(FRAME_3_ATTR_TABLE_0) --out-attribute-table1 $(FRAME_3_ATTR_TABLE_1) --out-attribute-table2 $(FRAME_3_ATTR_TABLE_2) --out-attribute-table3 $(FRAME_3_ATTR_TABLE_3) \
+	--out-palette0 $(FRAME_3_PALETTE_0) --out-palette1 $(FRAME_3_PALETTE_1) --out-palette2 $(FRAME_3_PALETTE_2) --out-palette3 $(FRAME_3_PALETTE_3)
 
 $(CREDITS_IMAGE_0) $(CREDITS_IMAGE_1) $(CREDITS_IMAGE_2) $(CREDITS_IMAGE_3): $(CREDITS_IMAGE)
 	$(SPLITTER) $(CREDITS_IMAGE) $(CREDITS_IMAGE_0) $(CREDITS_IMAGE_1) $(CREDITS_IMAGE_2) $(CREDITS_IMAGE_3)

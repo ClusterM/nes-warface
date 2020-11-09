@@ -48,11 +48,23 @@ frame_2_pattern:
 
   .bank 24
   .org $0000
+frame_3_pattern:
+  .incbin "frame_3_pattern_0.bin"
+  .org $1000
+  .incbin "frame_3_pattern_1.bin"  
+  .bank 25
+  .org $0000
+  .incbin "frame_3_pattern_2.bin"
+  .org $1000
+  .incbin "frame_3_pattern_3.bin"
+
+  .bank 26
+  .org $0000
 credits_pattern:
   .incbin "credits_pattern_0.bin"
   .org $1000
   .incbin "credits_pattern_1.bin"  
-  .bank 25
+  .bank 27
   .org $0000
   .incbin "credits_pattern_2.bin"
   .org $1000

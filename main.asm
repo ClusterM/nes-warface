@@ -224,21 +224,21 @@ console_detect_end:
   ; обнуляем скроллинг
   jsr reset_scroll
   ; загружаем nametable
-  lda #LOW(title_name_table)
+  lda #LOW(frame_3_name_table)
   sta <COPY_SOURCE_ADDR
-  lda #HIGH(title_name_table)
+  lda #HIGH(frame_3_name_table)
   sta <COPY_SOURCE_ADDR+1
-  lda #BANK(title_name_table)/2
+  lda #BANK(frame_3_name_table)/2
   jsr load_name_table
   ; выбираем CHR банк с автопереключением
-  lda #(BANK(title_pattern)-16)*2
+  lda #(BANK(frame_3_pattern)-16)*2
   jsr select_chr_auto_bank
   ; включаем PPU
   jsr enable_ppu
   ; загружаем палитру
-  lda #LOW(title_palette)
+  lda #LOW(frame_3_palette)
   sta <PAL_SOURCE_ADDR
-  lda #HIGH(title_palette)
+  lda #HIGH(frame_3_palette)
   sta <PAL_SOURCE_ADDR+1
   ; плавно прибавляем яркость
   jsr dim_in
