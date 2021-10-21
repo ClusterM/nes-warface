@@ -45,12 +45,12 @@ assign chr_ce = ppu_addr_in[13];
 assign chr_oe = ppu_addr_in[13] | ppu_rd;
 assign chr_prog = ppu_addr_in[13] | ppu_wr;
 
-reg prg_auto_switch = 0;
+reg chr_auto_switch = 0;
 reg [4:0] chr_bank;
 reg [1:0] chr_latch;
 assign ppu_addr_out[16:10] = !ppu_addr_in[12] 
 	? (
-	   prg_auto_switch
+      chr_auto_switch
 		? {chr_bank[4:2], chr_latch[1:0], ppu_addr_in[11:10]} // $0000-$0FFF is autoswitchable
 		: {chr_bank[4:0], ppu_addr_in[11:10]} // $0000-$0FFF is switchable manually
 	)
@@ -77,7 +77,7 @@ begin
 	   if (cpu_data[7]) timer = 4095;
 		timer_elapsed = 0;
 	 end else begin // odd
-	   prg_auto_switch = cpu_data[7];
+	   chr_auto_switch = cpu_data[7];
 		chr_bank[4:0] = cpu_data[4:0];
 	 end
   end 

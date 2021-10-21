@@ -31,8 +31,8 @@ namespace com.clusterrr.Warface
                     }
                     if (problems > 0)
                         Console.WriteLine("{0} bytes @ PRG bank #{1} are not clean", problems, bank);                    
-                    // if (problems < minProblems)
-                    //     Console.Beep();
+                     if (problems < minProblems)
+                         Console.Beep();
                     if (minProblems < 0 || problems < minProblems)
                         minProblems = problems;
                 } while (problems > 0);
@@ -57,8 +57,8 @@ namespace com.clusterrr.Warface
                     }
                     if (problems > 0)
                         Console.WriteLine("{0} bytes @ CHR bank #{1} are not clean", problems, bank);
-                    // if (problems < minProblems)
-                    //     Console.Beep();
+                     if (problems < minProblems)
+                         Console.Beep();
                     if (minProblems < 0 || problems < minProblems)
                         minProblems = problems;
                 } while (problems > 0);

@@ -6,8 +6,8 @@
 ; INES header
   .inesprg 128 * 1024  ; 16 банков PRG
   .ineschr 128 * 1024  ; 16 банков CHR
-  .inesmir 0      ; горизонтальный мирроринг
-  .inesmap 3914   ; маппер #3914 (кастомный)
+  .inesmir 0           ; горизонтальный мирроринг
+  .inesmap 3914        ; маппер #3914 (кастомный)
 
   .rsset $0020 ; адрес для переменных
 COPY_SOURCE_ADDR    .rs 2 ; исходный адрес для копирования данный
@@ -27,23 +27,23 @@ SCROLL_POS          .rs 1 ; текущая позиция скроллинга
 SCROLL_NT           .rs 1 ; текущий nametable скроллинга
 SCROLL_TARGET_POS   .rs 1 ; целевая позиция скроллинга
 THE_END             .rs 1 ; флаг, что пора зациклить
-BUTTONS             .rs 1 ; currently pressed buttons
-BUTTONS_TMP         .rs 1 ; temporary variable for buttons
-LAST_KONAMI_BUTTON  .rs 1 ; last button state for Konami Code check
-KONAMI_CODE_STATE   .rs 1 ; Konami Code state
-KONAMI_CODE_TRIGGERED .rs 1 ; Konami Code triggered flag
-SYMBOL_COUNTER      .rs 1 ; счтётчик напечатанных символов
+BUTTONS             .rs 1 ; нажатые в данный момент кнопки
+BUTTONS_TMP         .rs 1 ; временные переменные для кнопок
+LAST_KONAMI_BUTTON  .rs 1 ; последняя кнопка для Konami Code
+KONAMI_CODE_STATE   .rs 1 ; состоения Konami Code
+KONAMI_CODE_TRIGGERED .rs 1 ; флаг, что набран Konami Code
+SYMBOL_COUNTER      .rs 1 ; Счтётчик напечатанных символов
 
   .rsset $0400
 SPRITES             .rs 256 ; тут хранятся спрайты
 
-  .bank 12     ; PRG банк #12, середина PRG
-  .include "music.asm"
+  .bank 12    ; PRG банк #12, последние банки
+  .include music_asm ; Конастанты для музыки
   .org NSF_LOAD_ADDR
 music:
-  .incbin    "music.bin" ; Музыка
+  .incbin music_bin ; Код музыки
 
-  .bank 15     ; PRG банк #15, конец PRG
+  .bank 15    ; PRG банк #15, конец PRG
 
   .org $FFFA  ; Векторы прерываний
   .dw NMI     ; NMI вектор
@@ -95,7 +95,7 @@ IRQ:
   ; читаем контроллер
   lda #BANK(read_controller)/2
   sta $6000
-  jsr read_controller 
+  jsr read_controller
   ; возвращаем назад активный банк
   lda <ACTIVE_BANK
   sta $6000
@@ -302,8 +302,6 @@ wait_any_button:
 
 pause:
   jsr wait_buttons_not_pressed
-  ;ldx #150
-  ;jsr wait_blank_x
   jsr wait_any_button
   rts
 
@@ -317,58 +315,58 @@ pause:
   .org $A000
 
 title_palette:
-  .incbin "title_palette_0.bin"
-  .incbin "title_palette_1.bin"
-  .incbin "title_palette_2.bin"
-  .incbin "title_palette_3.bin"
+  .incbin title_palette_0_bin
+  .incbin title_palette_1_bin
+  .incbin title_palette_2_bin
+  .incbin title_palette_3_bin
 
 frame_0_palette:
-  .incbin "frame_0_palette_0.bin"
-  .incbin "frame_0_palette_1.bin"
-  .incbin "frame_0_palette_2.bin"
-  .incbin "frame_0_palette_3.bin"
+  .incbin frame_0_palette_0_bin
+  .incbin frame_0_palette_1_bin
+  .incbin frame_0_palette_2_bin
+  .incbin frame_0_palette_3_bin
 
 frame_1_palette:
-  .incbin "frame_1_palette_0.bin"
-  .incbin "frame_1_palette_1.bin"
-  .incbin "frame_1_palette_2.bin"
-  .incbin "frame_1_palette_3.bin"
+  .incbin frame_1_palette_0_bin
+  .incbin frame_1_palette_1_bin
+  .incbin frame_1_palette_2_bin
+  .incbin frame_1_palette_3_bin
 
 frame_2_palette:
-  .incbin "frame_2_palette_0.bin"
-  .incbin "frame_2_palette_1.bin"
-  .incbin "frame_2_palette_2.bin"
-  .incbin "frame_2_palette_3.bin"
+  .incbin frame_2_palette_0_bin
+  .incbin frame_2_palette_1_bin
+  .incbin frame_2_palette_2_bin
+  .incbin frame_2_palette_3_bin
 
 frame_3_palette:
-  .incbin "frame_3_palette_0.bin"
-  .incbin "frame_3_palette_1.bin"
-  .incbin "frame_3_palette_2.bin"
-  .incbin "frame_3_palette_3.bin"
+  .incbin frame_3_palette_0_bin
+  .incbin frame_3_palette_1_bin
+  .incbin frame_3_palette_2_bin
+  .incbin frame_3_palette_3_bin
 
 credits_palette:
-  .incbin "credits_palette_0.bin"
-  .incbin "credits_palette_1.bin"
-  .incbin "credits_palette_2.bin"
-  .incbin "credits_palette_3.bin"
+  .incbin credits_palette_0_bin
+  .incbin credits_palette_1_bin
+  .incbin credits_palette_2_bin
+  .incbin credits_palette_3_bin
 
 symbols_palette:
-  .incbin "symbols_palette.bin"
-  .incbin "warface_palette.bin"
+  .incbin symbols_palette_bin
+  .incbin warface_logo_palette_bin
   .db 0, 0, 0, 0
   .db 0, 0, 0, 0
 
 text_0:
-  .incbin "text_0.bin"
+  .incbin text_0_bin
 
 text_1:
-  .incbin "text_1.bin"
+  .incbin text_1_bin
 
 text_2:
-  .incbin "text_2.bin"
+  .incbin text_2_bin
 
 text_3:
-  .incbin "text_3.bin"
+  .incbin text_3_bin
 
   .include "sprites.asm"
 

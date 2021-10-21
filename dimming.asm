@@ -128,15 +128,10 @@ dim_out:
   jsr load_palette
   ldx #5
   jsr wait_blank_x
-  jsr preload_palette
-  jsr dim
   jsr dim
   jsr load_palette
   ldx #5
   jsr wait_blank_x
-  jsr preload_palette
-  jsr dim
-  jsr dim
   jsr dim
   jsr load_palette
   ldx #5

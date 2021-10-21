@@ -19,7 +19,7 @@ print_text:
   sta <TEXT_LINE
   lda #1
   sta <TEXT_POS
-  sta SPRITES_ENABLED
+  sta <SPRITES_ENABLED
   lda #0
   sta <TEXT_NAMETABLE
   sta <TEXT_SCROLL_STARTED
@@ -59,7 +59,7 @@ print_text:
   jsr wait_buttons_not_pressed
   jsr wait_any_button
   lda #0
-  sta SPRITES_ENABLED
+  sta <SPRITES_ENABLED
   lda #LOW(symbols_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(symbols_palette)
@@ -68,7 +68,7 @@ print_text:
   rts
 .exit_to_credits:
   lda #0
-  sta SPRITES_ENABLED
+  sta <SPRITES_ENABLED
   lda #LOW(symbols_palette)
   sta <PAL_SOURCE_ADDR
   lda #HIGH(symbols_palette)
