@@ -108,7 +108,7 @@ begin
    begin
       scanline = 0;        
       new_screen_clear = 1;
-      chr_latch = 0;
+      chr_latch <= 0;
    end else 
    if (ppu_addr_in[13:12] == 2'b10)
    begin
@@ -116,9 +116,9 @@ begin
       begin
          ppu_nt_read_count = ppu_nt_read_count + 1'b1;
       end else begin
-			if (scanline == 64) chr_latch = 1;
-			if (scanline == 128) chr_latch = 2;
-			if (scanline == 192) chr_latch = 3;
+			if (scanline == 64) chr_latch <= 1;
+			if (scanline == 128) chr_latch <= 2;
+			if (scanline == 192) chr_latch <= 3;
          scanline = scanline + 1'b1;
       end
    end else begin
