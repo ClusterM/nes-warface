@@ -277,7 +277,7 @@ $(TEXT_0_BIN) $(TEXT_1_BIN) $(TEXT_2_BIN) $(TEXT_3_BIN) $(SYMBOLS_PATTERN_BIN) $
 	-C frame_0_attr_table_0_bin=$(FRAME_0_ATTR_TABLE_0_BIN) -C frame_0_attr_table_1_bin=$(FRAME_0_ATTR_TABLE_1_BIN) \
 	-C frame_0_attr_table_2_bin=$(FRAME_0_ATTR_TABLE_2_BIN) -C frame_0_attr_table_3_bin=$(FRAME_0_ATTR_TABLE_3_BIN) \
 	-C frame_0_palette_0_bin=$(FRAME_0_PALETTE_0_BIN) -C frame_0_palette_1_bin=$(FRAME_0_PALETTE_1_BIN) \
-	-C frame_0_palette_2_bin=$(FRAME_0_PALETTE_2_BIN) -C frame_0_palette_3_bin=$(TITLE_PALETTE_3_BIN) \
+	-C frame_0_palette_2_bin=$(FRAME_0_PALETTE_2_BIN) -C frame_0_palette_3_bin=$(FRAME_0_PALETTE_3_BIN) \
 	-C frame_1_pattern_0_bin=$(FRAME_1_PATTERN_0_BIN) -C frame_1_pattern_1_bin=$(FRAME_1_PATTERN_1_BIN) \
 	-C frame_1_pattern_2_bin=$(FRAME_1_PATTERN_2_BIN) -C frame_1_pattern_3_bin=$(FRAME_1_PATTERN_3_BIN) \
 	-C frame_1_name_table_0_bin=$(FRAME_1_NAME_TABLE_0_BIN) -C frame_1_name_table_1_bin=$(FRAME_1_NAME_TABLE_1_BIN) \
@@ -285,7 +285,7 @@ $(TEXT_0_BIN) $(TEXT_1_BIN) $(TEXT_2_BIN) $(TEXT_3_BIN) $(SYMBOLS_PATTERN_BIN) $
 	-C frame_1_attr_table_0_bin=$(FRAME_1_ATTR_TABLE_0_BIN) -C frame_1_attr_table_1_bin=$(FRAME_1_ATTR_TABLE_1_BIN) \
 	-C frame_1_attr_table_2_bin=$(FRAME_1_ATTR_TABLE_2_BIN) -C frame_1_attr_table_3_bin=$(FRAME_1_ATTR_TABLE_3_BIN) \
 	-C frame_1_palette_0_bin=$(FRAME_1_PALETTE_0_BIN) -C frame_1_palette_1_bin=$(FRAME_1_PALETTE_1_BIN) \
-	-C frame_1_palette_2_bin=$(FRAME_1_PALETTE_2_BIN) -C frame_1_palette_3_bin=$(TITLE_PALETTE_3_BIN) \
+	-C frame_1_palette_2_bin=$(FRAME_1_PALETTE_2_BIN) -C frame_1_palette_3_bin=$(FRAME_1_PALETTE_3_BIN) \
 	-C frame_2_pattern_0_bin=$(FRAME_2_PATTERN_0_BIN) -C frame_2_pattern_1_bin=$(FRAME_2_PATTERN_1_BIN) \
 	-C frame_2_pattern_2_bin=$(FRAME_2_PATTERN_2_BIN) -C frame_2_pattern_3_bin=$(FRAME_2_PATTERN_3_BIN) \
 	-C frame_2_name_table_0_bin=$(FRAME_2_NAME_TABLE_0_BIN) -C frame_2_name_table_1_bin=$(FRAME_2_NAME_TABLE_1_BIN) \
@@ -293,7 +293,7 @@ $(TEXT_0_BIN) $(TEXT_1_BIN) $(TEXT_2_BIN) $(TEXT_3_BIN) $(SYMBOLS_PATTERN_BIN) $
 	-C frame_2_attr_table_0_bin=$(FRAME_2_ATTR_TABLE_0_BIN) -C frame_2_attr_table_1_bin=$(FRAME_2_ATTR_TABLE_1_BIN) \
 	-C frame_2_attr_table_2_bin=$(FRAME_2_ATTR_TABLE_2_BIN) -C frame_2_attr_table_3_bin=$(FRAME_2_ATTR_TABLE_3_BIN) \
 	-C frame_2_palette_0_bin=$(FRAME_2_PALETTE_0_BIN) -C frame_2_palette_1_bin=$(FRAME_2_PALETTE_1_BIN) \
-	-C frame_2_palette_2_bin=$(FRAME_2_PALETTE_2_BIN) -C frame_2_palette_3_bin=$(TITLE_PALETTE_3_BIN) \
+	-C frame_2_palette_2_bin=$(FRAME_2_PALETTE_2_BIN) -C frame_2_palette_3_bin=$(FRAME_2_PALETTE_3_BIN) \
 	-C frame_3_pattern_0_bin=$(FRAME_3_PATTERN_0_BIN) -C frame_3_pattern_1_bin=$(FRAME_3_PATTERN_1_BIN) \
 	-C frame_3_pattern_2_bin=$(FRAME_3_PATTERN_2_BIN) -C frame_3_pattern_3_bin=$(FRAME_3_PATTERN_3_BIN) \
 	-C frame_3_name_table_0_bin=$(FRAME_3_NAME_TABLE_0_BIN) -C frame_3_name_table_1_bin=$(FRAME_3_NAME_TABLE_1_BIN) \

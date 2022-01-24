@@ -54,7 +54,7 @@ assign ppu_addr_out[16:10] = !ppu_addr_in[12]
 		? {chr_bank[4:2], chr_latch[1:0], ppu_addr_in[11:10]} // $0000-$0FFF is autoswitchable
 		: {chr_bank[4:0], ppu_addr_in[11:10]} // $0000-$0FFF is switchable manually
 	)
-	: {5'b11111, ppu_addr_in[11:10]}; // $1000-$1FFF is fixed to last
+	: {5'b11111, ppu_addr_in[11:10]}; // $1000-$1FFF is fixed to the last
 
 assign ciram_a10 = ppu_addr_in[11]; // horizontal mirroring
 
