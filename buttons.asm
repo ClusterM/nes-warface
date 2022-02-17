@@ -43,7 +43,7 @@ konami_code_check:
   jmp .end
 .check_fail:
   ldy #0
-  lda konami_code ; in case when newpressed button is first button of code
+  lda konami_code ; на случай, если нажатая кнопка - начало новой последовательности
   cmp <BUTTONS
   bne .end
   iny

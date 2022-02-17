@@ -316,9 +316,6 @@ $(TEXT_0_BIN) $(TEXT_1_BIN) $(TEXT_2_BIN) $(TEXT_3_BIN) $(SYMBOLS_PATTERN_BIN) $
 	-C symbols_pattern_bin=$(SYMBOLS_PATTERN_BIN) -C symbols_palette_bin=$(SYMBOLS_PALETTE_BIN) \
 	-C music_bin=$(MUSIC_BIN) -C music_asm=$(MUSIC_ASM)
 
-$(MUSIC_BIN):
-	dd if=$(MUSIC) of=music.bin bs=1 skip=128
-
 build: $(EXECUTABLE)
 
 clean:
@@ -404,6 +401,9 @@ $(SYMBOLS_PATTERN_BIN) $(SYMBOLS_PALETTE_BIN): $(SYMBOLS_IMAGE)
 
 $(MUSIC_ASM): $(MUSIC)
 	printf "NSF_LOAD_ADDR .equ `hexdump $(MUSIC) --skip 8 --length 2 --format '"$$%X"'`\nNSF_INIT_ADDR .equ `hexdump $(MUSIC) --skip 10 --length 2 --format '"$$%X"'`\nNSF_PLAY_ADDR .equ `hexdump $(MUSIC) --skip 12 --length 2 --format '"$$%X"'`" > music.asm
+
+$(MUSIC_BIN):
+	dd if=$(MUSIC) of=music.bin bs=1 skip=128
 
 write: $(EXECUTABLE)
 	tools\FamicomDumper.exe script --csfile WriteWarface.cs --sound
