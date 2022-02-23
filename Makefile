@@ -406,9 +406,9 @@ $(MUSIC_BIN):
 	dd if=$(MUSIC) of=music.bin bs=1 skip=128
 
 write: $(EXECUTABLE)
-	tools\FamicomDumper.exe script --csfile WriteWarface.cs --sound
+	tools\famicom-dumper.exe script --csfile Scripts/WriteWarface.cs --sound
 
 erase:
-	tools\FamicomDumper.exe script --csfile EraseCheck.cs --sound
+	tools\famicomDumper.exe script --csfile Scripts/EraseCheck.cs --sound
 
 .PHONY: clean write erase
