@@ -94,8 +94,7 @@ SYMBOLS_IMAGE=images/symbols.png
 
 NESASM=tools/nesasm
 EMU=fceux64
-SPLITTER=tools/ImageSplitter
-TILER=tools/NesTiler
+TILER=tools/nestiler --colors tools/nestiler-colors.json
 TEXT_CONVERTER=tools/TextConverter
 SOURCE=warface.asm
 EXECUTABLE=warface_$(STORY).nes
@@ -406,7 +405,7 @@ $(MUSIC_BIN):
 	dd if=$(MUSIC) of=music.bin bs=1 skip=128
 
 write: $(EXECUTABLE)
-	tools\famicom-dumper.exe script --csfile Scripts/WriteWarface.cs --sound
+	tools\famicom-dumper.exe script --csfile Scripts/WriteWarface.cs --sound --file $(EXECUTABLE)
 
 erase:
 	tools\famicomDumper.exe script --csfile Scripts/EraseCheck.cs --sound
