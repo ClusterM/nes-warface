@@ -4,3 +4,6 @@
 [submodule "tools_sources/nesasm"]
 	path = tools_sources/nesasm
 	url = https://github.com/ClusterM/nesasm.git
+[submodule "tools_sources/fceux"]
+	path = tools_sources/fceux
+	url = https://github.com/ClusterM/fceux.git
