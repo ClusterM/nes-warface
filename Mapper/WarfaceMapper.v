@@ -67,19 +67,19 @@ begin
   if (timer != 0)
   begin
     timer = timer - 1'b1;
-	 if (timer == 0) timer_elapsed = 1;
+  if (timer == 0) timer_elapsed = 1;
   end
   if (romsel && !cpu_rw && cpu_a13 && cpu_a14) // write to $6000-$7FFF
   begin
     if (!cpu_a0)
-	 begin // even
-	   prg_bank[2:0] = cpu_data[2:0];
-	   if (cpu_data[7]) timer = 4095;
-		timer_elapsed = 0;
-	 end else begin // odd
-	   chr_auto_switch = cpu_data[7];
-		chr_bank[4:0] = cpu_data[4:0];
-	 end
+    begin // even
+      prg_bank[2:0] = cpu_data[2:0];
+      if (cpu_data[7]) timer = 4095;
+      timer_elapsed = 0;
+    end else begin // odd
+      chr_auto_switch = cpu_data[7];
+      chr_bank[4:0] = cpu_data[4:0];
+    end
   end 
 end
 

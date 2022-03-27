@@ -399,7 +399,11 @@ $(SYMBOLS_PATTERN_BIN) $(SYMBOLS_PALETTE_BIN): $(SYMBOLS_IMAGE)
 	$(TILER) -i0 $(SYMBOLS_IMAGE) --enable-palettes 0	--out-pattern-table0 $(SYMBOLS_PATTERN_BIN) --out-palette0 $(SYMBOLS_PALETTE_BIN) --bgcolor #000000
 
 $(MUSIC_ASM): $(MUSIC)
-	printf "NSF_LOAD_ADDR .equ `hexdump $(MUSIC) --skip 8 --length 2 --format '"$$%X"'`\nNSF_INIT_ADDR .equ `hexdump $(MUSIC) --skip 10 --length 2 --format '"$$%X"'`\nNSF_PLAY_ADDR .equ `hexdump $(MUSIC) --skip 12 --length 2 --format '"$$%X"'`" > music.asm
+	printf \
+  "NSF_LOAD_ADDR .equ `hexdump $(MUSIC) --skip 8 --length 2 \
+  --format '"$$%X"'`\nNSF_INIT_ADDR .equ `hexdump $(MUSIC) --skip 10 --length 2 \
+  --format '"$$%X"'`\nNSF_PLAY_ADDR .equ `hexdump $(MUSIC) --skip 12 --length 2 \
+  --format '"$$%X"'`" > music.asm
 
 $(MUSIC_BIN):
 	dd if=$(MUSIC) of=music.bin bs=1 skip=128
