@@ -92,9 +92,9 @@ endif
 LOGO_IMAGE=images/warface_logo_small.gif
 SYMBOLS_IMAGE=images/symbols.png
 
-NESASM=tools/nesasm
+NESASM=nesasm
 EMU=fceux64
-TILER=tools/nestiler --colors tools/nestiler-colors.json
+TILER=nestiler
 TEXT_CONVERTER=tools/TextConverter
 SOURCE=warface.asm
 EXECUTABLE=warface_$(STORY).nes
@@ -328,7 +328,7 @@ $(TITLE_PALETTE_0_BIN) $(TITLE_PALETTE_1_BIN) $(TITLE_PALETTE_2_BIN) $(TITLE_PAL
 	--out-pattern-table0 $(TITLE_PATTERN_0_BIN) --out-pattern-table1 $(TITLE_PATTERN_1_BIN) --out-pattern-table2 $(TITLE_PATTERN_2_BIN) --out-pattern-table3 $(TITLE_PATTERN_3_BIN) \
 	--out-name-table0 $(TITLE_NAME_TABLE_0_BIN) --out-name-table1 $(TITLE_NAME_TABLE_1_BIN) --out-name-table2 $(TITLE_NAME_TABLE_2_BIN) --out-name-table3 $(TITLE_NAME_TABLE_3_BIN) \
 	--out-attribute-table0 $(TITLE_ATTR_TABLE_0_BIN) --out-attribute-table1 $(TITLE_ATTR_TABLE_1_BIN) --out-attribute-table2 $(TITLE_ATTR_TABLE_2_BIN) --out-attribute-table3 $(TITLE_ATTR_TABLE_3_BIN) \
-	--out-palette0 $(TITLE_PALETTE_0_BIN) --out-palette1 $(TITLE_PALETTE_1_BIN) --out-palette2 $(TITLE_PALETTE_2_BIN) --out-palette3 $(TITLE_PALETTE_3_BIN)
+	--out-palette0 $(TITLE_PALETTE_0_BIN) --out-palette1 $(TITLE_PALETTE_1_BIN) --out-palette2 $(TITLE_PALETTE_2_BIN) --out-palette3 $(TITLE_PALETTE_3_BIN) --lossy 3
 
 $(FRAME_0_PATTERN_0_BIN) $(FRAME_0_PATTERN_1_BIN) $(FRAME_0_PATTERN_2_BIN) $(FRAME_0_PATTERN_3_BIN) \
 $(FRAME_0_NAME_TABLE_0_BIN) $(FRAME_0_NAME_TABLE_1_BIN) $(FRAME_0_NAME_TABLE_2_BIN) $(FRAME_0_NAME_TABLE_3_BIN) \
@@ -338,7 +338,7 @@ $(FRAME_0_PALETTE_0_BIN) $(FRAME_0_PALETTE_1_BIN) $(FRAME_0_PALETTE_2_BIN) $(FRA
 	--out-pattern-table0 $(FRAME_0_PATTERN_0_BIN) --out-pattern-table1 $(FRAME_0_PATTERN_1_BIN) --out-pattern-table2 $(FRAME_0_PATTERN_2_BIN) --out-pattern-table3 $(FRAME_0_PATTERN_3_BIN) \
 	--out-name-table0 $(FRAME_0_NAME_TABLE_0_BIN) --out-name-table1 $(FRAME_0_NAME_TABLE_1_BIN) --out-name-table2 $(FRAME_0_NAME_TABLE_2_BIN) --out-name-table3 $(FRAME_0_NAME_TABLE_3_BIN) \
 	--out-attribute-table0 $(FRAME_0_ATTR_TABLE_0_BIN) --out-attribute-table1 $(FRAME_0_ATTR_TABLE_1_BIN) --out-attribute-table2 $(FRAME_0_ATTR_TABLE_2_BIN) --out-attribute-table3 $(FRAME_0_ATTR_TABLE_3_BIN) \
-	--out-palette0 $(FRAME_0_PALETTE_0_BIN) --out-palette1 $(FRAME_0_PALETTE_1_BIN) --out-palette2 $(FRAME_0_PALETTE_2_BIN) --out-palette3 $(FRAME_0_PALETTE_3_BIN)
+	--out-palette0 $(FRAME_0_PALETTE_0_BIN) --out-palette1 $(FRAME_0_PALETTE_1_BIN) --out-palette2 $(FRAME_0_PALETTE_2_BIN) --out-palette3 $(FRAME_0_PALETTE_3_BIN) --lossy 3
 
 $(FRAME_1_PATTERN_0_BIN) $(FRAME_1_PATTERN_1_BIN) $(FRAME_1_PATTERN_2_BIN) $(FRAME_1_PATTERN_3_BIN) \
 $(FRAME_1_NAME_TABLE_0_BIN) $(FRAME_1_NAME_TABLE_1_BIN) $(FRAME_1_NAME_TABLE_2_BIN) $(FRAME_1_NAME_TABLE_3_BIN) \
@@ -348,7 +348,7 @@ $(FRAME_1_PALETTE_0_BIN) $(FRAME_1_PALETTE_1_BIN) $(FRAME_1_PALETTE_2_BIN) $(FRA
 	--out-pattern-table0 $(FRAME_1_PATTERN_0_BIN) --out-pattern-table1 $(FRAME_1_PATTERN_1_BIN) --out-pattern-table2 $(FRAME_1_PATTERN_2_BIN) --out-pattern-table3 $(FRAME_1_PATTERN_3_BIN) \
 	--out-name-table0 $(FRAME_1_NAME_TABLE_0_BIN) --out-name-table1 $(FRAME_1_NAME_TABLE_1_BIN) --out-name-table2 $(FRAME_1_NAME_TABLE_2_BIN) --out-name-table3 $(FRAME_1_NAME_TABLE_3_BIN) \
 	--out-attribute-table0 $(FRAME_1_ATTR_TABLE_0_BIN) --out-attribute-table1 $(FRAME_1_ATTR_TABLE_1_BIN) --out-attribute-table2 $(FRAME_1_ATTR_TABLE_2_BIN) --out-attribute-table3 $(FRAME_1_ATTR_TABLE_3_BIN) \
-	--out-palette0 $(FRAME_1_PALETTE_0_BIN) --out-palette1 $(FRAME_1_PALETTE_1_BIN) --out-palette2 $(FRAME_1_PALETTE_2_BIN) --out-palette3 $(FRAME_1_PALETTE_3_BIN)
+	--out-palette0 $(FRAME_1_PALETTE_0_BIN) --out-palette1 $(FRAME_1_PALETTE_1_BIN) --out-palette2 $(FRAME_1_PALETTE_2_BIN) --out-palette3 $(FRAME_1_PALETTE_3_BIN) --lossy 3
 
 $(FRAME_2_PATTERN_0_BIN) $(FRAME_2_PATTERN_1_BIN) $(FRAME_2_PATTERN_2_BIN) $(FRAME_2_PATTERN_3_BIN) \
 $(FRAME_2_NAME_TABLE_0_BIN) $(FRAME_2_NAME_TABLE_1_BIN) $(FRAME_2_NAME_TABLE_2_BIN) $(FRAME_2_NAME_TABLE_3_BIN) \
@@ -358,7 +358,7 @@ $(FRAME_2_PALETTE_0_BIN) $(FRAME_2_PALETTE_1_BIN) $(FRAME_2_PALETTE_2_BIN) $(FRA
 	--out-pattern-table0 $(FRAME_2_PATTERN_0_BIN) --out-pattern-table1 $(FRAME_2_PATTERN_1_BIN) --out-pattern-table2 $(FRAME_2_PATTERN_2_BIN) --out-pattern-table3 $(FRAME_2_PATTERN_3_BIN) \
 	--out-name-table0 $(FRAME_2_NAME_TABLE_0_BIN) --out-name-table1 $(FRAME_2_NAME_TABLE_1_BIN) --out-name-table2 $(FRAME_2_NAME_TABLE_2_BIN) --out-name-table3 $(FRAME_2_NAME_TABLE_3_BIN) \
 	--out-attribute-table0 $(FRAME_2_ATTR_TABLE_0_BIN) --out-attribute-table1 $(FRAME_2_ATTR_TABLE_1_BIN) --out-attribute-table2 $(FRAME_2_ATTR_TABLE_2_BIN) --out-attribute-table3 $(FRAME_2_ATTR_TABLE_3_BIN) \
-	--out-palette0 $(FRAME_2_PALETTE_0_BIN) --out-palette1 $(FRAME_2_PALETTE_1_BIN) --out-palette2 $(FRAME_2_PALETTE_2_BIN) --out-palette3 $(FRAME_2_PALETTE_3_BIN)
+	--out-palette0 $(FRAME_2_PALETTE_0_BIN) --out-palette1 $(FRAME_2_PALETTE_1_BIN) --out-palette2 $(FRAME_2_PALETTE_2_BIN) --out-palette3 $(FRAME_2_PALETTE_3_BIN) --lossy 3
 
 $(FRAME_3_PATTERN_0_BIN) $(FRAME_3_PATTERN_1_BIN) $(FRAME_3_PATTERN_2_BIN) $(FRAME_3_PATTERN_3_BIN) \
 $(FRAME_3_NAME_TABLE_0_BIN) $(FRAME_3_NAME_TABLE_1_BIN) $(FRAME_3_NAME_TABLE_2_BIN) $(FRAME_3_NAME_TABLE_3_BIN) \
@@ -368,7 +368,7 @@ $(FRAME_3_PALETTE_0_BIN) $(FRAME_3_PALETTE_1_BIN) $(FRAME_3_PALETTE_2_BIN) $(FRA
 	--out-pattern-table0 $(FRAME_3_PATTERN_0_BIN) --out-pattern-table1 $(FRAME_3_PATTERN_1_BIN) --out-pattern-table2 $(FRAME_3_PATTERN_2_BIN) --out-pattern-table3 $(FRAME_3_PATTERN_3_BIN) \
 	--out-name-table0 $(FRAME_3_NAME_TABLE_0_BIN) --out-name-table1 $(FRAME_3_NAME_TABLE_1_BIN) --out-name-table2 $(FRAME_3_NAME_TABLE_2_BIN) --out-name-table3 $(FRAME_3_NAME_TABLE_3_BIN) \
 	--out-attribute-table0 $(FRAME_3_ATTR_TABLE_0_BIN) --out-attribute-table1 $(FRAME_3_ATTR_TABLE_1_BIN) --out-attribute-table2 $(FRAME_3_ATTR_TABLE_2_BIN) --out-attribute-table3 $(FRAME_3_ATTR_TABLE_3_BIN) \
-	--out-palette0 $(FRAME_3_PALETTE_0_BIN) --out-palette1 $(FRAME_3_PALETTE_1_BIN) --out-palette2 $(FRAME_3_PALETTE_2_BIN) --out-palette3 $(FRAME_3_PALETTE_3_BIN)
+	--out-palette0 $(FRAME_3_PALETTE_0_BIN) --out-palette1 $(FRAME_3_PALETTE_1_BIN) --out-palette2 $(FRAME_3_PALETTE_2_BIN) --out-palette3 $(FRAME_3_PALETTE_3_BIN) --lossy 3
 
 $(CREDITS_PATTERN_0_BIN) $(CREDITS_PATTERN_1_BIN) $(CREDITS_PATTERN_2_BIN) $(CREDITS_PATTERN_3_BIN) \
 $(CREDITS_NAME_TABLE_0_BIN) $(CREDITS_NAME_TABLE_1_BIN) $(CREDITS_NAME_TABLE_2_BIN) $(CREDITS_NAME_TABLE_3_BIN) \
@@ -378,10 +378,10 @@ $(CREDITS_PALETTE_0_BIN) $(CREDITS_PALETTE_1_BIN) $(CREDITS_PALETTE_2_BIN) $(CRE
 	--out-pattern-table0 $(CREDITS_PATTERN_0_BIN) --out-pattern-table1 $(CREDITS_PATTERN_1_BIN) --out-pattern-table2 $(CREDITS_PATTERN_2_BIN) --out-pattern-table3 $(CREDITS_PATTERN_3_BIN) \
 	--out-name-table0 $(CREDITS_NAME_TABLE_0_BIN) --out-name-table1 $(CREDITS_NAME_TABLE_1_BIN) --out-name-table2 $(CREDITS_NAME_TABLE_2_BIN) --out-name-table3 $(CREDITS_NAME_TABLE_3_BIN) \
 	--out-attribute-table0 $(CREDITS_ATTR_TABLE_0_BIN) --out-attribute-table1 $(CREDITS_ATTR_TABLE_1_BIN) --out-attribute-table2 $(CREDITS_ATTR_TABLE_2_BIN) --out-attribute-table3 $(CREDITS_ATTR_TABLE_3_BIN) \
-	--out-palette0 $(CREDITS_PALETTE_0_BIN) --out-palette1 $(CREDITS_PALETTE_1_BIN) --out-palette2 $(CREDITS_PALETTE_2_BIN) --out-palette3 $(CREDITS_PALETTE_3_BIN)
+	--out-palette0 $(CREDITS_PALETTE_0_BIN) --out-palette1 $(CREDITS_PALETTE_1_BIN) --out-palette2 $(CREDITS_PALETTE_2_BIN) --out-palette3 $(CREDITS_PALETTE_3_BIN) --lossy 3
 
 $(WARFACE_LOGO_PATTERN_BIN) $(WARFACE_LOGO_PALETTE_BIN): $(LOGO_IMAGE)
-	$(TILER) -i0 $(LOGO_IMAGE) --mode sprites --enable-palettes 1 --out-pattern-table0 $(WARFACE_LOGO_PATTERN_BIN) --out-palette1 $(WARFACE_LOGO_PALETTE_BIN)
+	$(TILER) -i0 $(LOGO_IMAGE) --mode sprites --enable-palettes 1 --out-pattern-table0 $(WARFACE_LOGO_PATTERN_BIN) --out-palette1 $(WARFACE_LOGO_PALETTE_BIN) --bg-color \#000000
 
 $(TEXT_0_BIN): $(TEXT_0)
 	$(TEXT_CONVERTER) $(TEXT_0) $(TEXT_0_BIN)
@@ -396,7 +396,7 @@ $(TEXT_3_BIN): $(TEXT_3)
 	$(TEXT_CONVERTER) $(TEXT_3) $(TEXT_3_BIN)
 
 $(SYMBOLS_PATTERN_BIN) $(SYMBOLS_PALETTE_BIN): $(SYMBOLS_IMAGE)
-	$(TILER) -i0 $(SYMBOLS_IMAGE) --enable-palettes 0	--out-pattern-table0 $(SYMBOLS_PATTERN_BIN) --out-palette0 $(SYMBOLS_PALETTE_BIN) --bgcolor #000000
+	$(TILER) -i0 $(SYMBOLS_IMAGE) --enable-palettes 0 --out-pattern-table0 $(SYMBOLS_PATTERN_BIN) --out-palette0 $(SYMBOLS_PALETTE_BIN) --bg-color \#000000
 
 $(MUSIC_ASM): $(MUSIC)
 	printf \
